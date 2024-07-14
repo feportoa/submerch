@@ -1,26 +1,24 @@
-const fetch = require('node-fetch');
-
 const express = require('express');
 const { pgQuery } = require('../db.js');
 
 const router = express.Router()
 
-router.get('/api/hello', (req, res) => {
+router.get('/hello', (req, res) => {
     res.json({message: "Hallo Welt!"})
 });
 
-router.get('/api/allUsers', async (req, res) => {
+router.get('/allUsers', async (req, res) => {
     try {
         const sql = "SELECT * FROM users;"
-        const test = await pgQuery(sql);
-        return res.json(test);
+        const queryRes = await pgQuery(sql);
+        return res.json(queryRes);
     } catch (err) {
         console.error("Error fetching users: " + err);
         res.status(500).json( { error: `Internal server error: ${err}`} );
     }
 });
 
-router.post('/api/postUser', async (req, res) => {
+router.post('/addUser', async (req, res) => {
     try {
         const userReq = req.body;
         const userAlreadyExists = await userExists(userReq.email);
@@ -37,6 +35,20 @@ router.post('/api/postUser', async (req, res) => {
     } catch (err) {
         console.error(err);
         res.status(500).json( { error: `Internal server error: ${err.message}`} );
+    }
+});
+
+router.delete('/removeUser', async (req, res) => {
+    try {
+        const userReq = req.body;
+
+        const params = [userReq.email];
+        const sql = "DELETE FROM users WHERE email = $1;"
+        await pgQuery(sql, params);
+
+        return res.status(200).json("User \"" + userReq.email + "\" deleted successfully")
+    } catch (err) {
+        res.status(500).json("Internal server error: " + err.message);
     }
 });
 

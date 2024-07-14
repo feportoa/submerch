@@ -1,4 +1,6 @@
 const userRoutes = require('./routes/userRoutes.js');
+const productRoutes = require('./routes/productRoutes.js');
+const manufacturerRoutes = require('./routes/manufacturerRoutes.js');
 
 const { connectDB } = require('./db.js');
 const express = require('express');
@@ -21,9 +23,11 @@ connectDB()
     // Serves JavaScript and CSS files (Used by html)
     app.use(express.static('public'));
     
-    // User Routes
-    app.use(userRoutes);
-    
+    // Routes
+    app.use('/api/', userRoutes);
+    app.use('/api/', productRoutes);
+    app.use('/api/', manufacturerRoutes);
+
     app.listen(PORT, HOST, () => {
         console.log(`App listening on ${HOST}:${PORT}`);
     });

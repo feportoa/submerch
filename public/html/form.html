@@ -10,7 +10,7 @@
 <body>
     <h1>Teste</h1>
 
-    <form action="/api/postUser" method="post" id="postUser">
+    <form action="/api/addUser" method="post" id="postUser">
         <label for="name">Name: </label>
         <input type="text" id="name" name="name" placeholder="Name here!" required>
         <label for="email">Email: </label>
@@ -32,7 +32,7 @@
 
             if (name && email && password){
                 try {
-                    let response = await fetch('/api/postUser', {
+                    let response = await fetch('/api/addUser', {
                         method: 'POST',
                         headers: {
                             'Accept': 'application/json',
@@ -45,7 +45,7 @@
                         const errorData = await response.json();
                         throw new Error(errorData.error);
                     } else {
-                        window.location.href = '/'; // Redirect only on success
+                        window.location.reload(); // Reload only on success
                     }
                 } catch (err) {
                     alert(err.message); // Alert the error message
