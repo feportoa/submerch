@@ -9,6 +9,7 @@
 </head>
 <body>
     <h1>Teste</h1>
+    <img src="/static/diane.jpg" alt="Da best girl :3">
 
     <form action="/api/addUser" method="post" id="postUser">
         <label for="name">Name: </label>
@@ -32,7 +33,7 @@
 
             if (name && email && password){
                 try {
-                    let response = await fetch('/api/addUser', {
+                    let response = await fetch('/users/addUser', {
                         method: 'POST',
                         headers: {
                             'Accept': 'application/json',
@@ -48,6 +49,7 @@
                         window.location.reload(); // Reload only on success
                     }
                 } catch (err) {
+                    console.log(err.message);
                     alert(err.message); // Alert the error message
                 }
             }
@@ -56,14 +58,14 @@
 
     <div id="division"></div>
 
-    <script src="../js/ajax.js"></script>
+    <script src="../js/usersAjax.js"></script>
     
-    <script>
+    <!-- <script>
         const deleteBtn = document.querySelector('.delete-btn')
 
         deleteBtn.forEach(element => {
             
         });
-    </script>
+    </script> -->
 </body>
 </html>

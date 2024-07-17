@@ -1,18 +1,18 @@
 const productRoutes = require('./productRoutes.js');
 
 const express = require('express');
-const { pgQuery } = require('../db.js')
+const { pgQuery } = require('../utils/db.js')
 
 const router = express.Router();
 
-router.get('/allManufacturers', async (req, res) => {
+router.get('/', async (req, res) => {
     try {
         const sql = "SELECT * FROM manufacturers;";
         const queryRes = await pgQuery(sql);
 
         return res.status(200).json(queryRes);
     } catch (err) {
-        res.status(500).json('Internal server error: ' + err.message);
+        res.status(500).json({ message: 'Internal server error: ' + err.message });
         throw err;
     }
 });
@@ -26,9 +26,9 @@ router.post('/addManufacturer', async (req, res) => {
         
         await pgQuery(sql, params);
 
-        return res.status(200).json("New manufacturer added successfully.");
+        return res.status(200).json({ message: "New manufacturer added successfully." });
     } catch (err) {
-        res.status(500).json('Internal server error: ' + err.message);
+        res.status(500).json({ message: 'Internal server error: ' + err.message });
         throw err;
     }
 });
@@ -39,8 +39,10 @@ router.delete('/removeManufacturer', async (req, res) => {
     
         const manufacturerData = await findByName(userReq.name);
 
-        if(userReq.forceDelete == true) {
-            await cleanManufacturersProducts(manufacturerData.id);
+        if (hasProducts(manufacturerData.id) && userReq.forceDelete == true) {
+            await clearProducts(manufacturerData.id);
+        } else if (hasProducts(manufacturerData.id)) {
+            return res.status(400).json({ message: 'Cannot delete manufacturer with products. Set forceDelete to true to override.' })
         }
 
         if (manufacturerData != undefined) {
@@ -49,12 +51,12 @@ router.delete('/removeManufacturer', async (req, res) => {
             
             await pgQuery(sql, params)
             
-            return res.status(200).json(`Manufacturer of id ${ manufacturerData.id } deleted successfully.`);
+            return res.status(200).json({ message: `Manufacturer of id ${ manufacturerData.id } deleted successfully.` });
         } else {
-            return res.status(500).json('Internal server error: "' + userReq.name + '" not found in database');
+            return res.status(404).json({ message: 'Manufacturer: "' + userReq.name + '" not found in database' });
         }
     } catch (err) {
-        res.status(500).json('Internal server error: ' + err.message);
+        res.status(500).json({ message: 'Internal server error: ' + err.message });
         throw err;
     }
 });
@@ -71,7 +73,19 @@ async function findByName(name) {
     }
 }
 
-async function cleanManufacturersProducts(manufacturerId) {
+async function hasProducts(manufacturerId) {
+    try {
+        const params = [manufacturerId];
+        const sql = "SELECT * FROM products WHERE manufacturer_id = $1"
+
+        const queryRes = await pgQuery(sql, params);
+        return queryRes.rows[0] > 0;
+    } catch (err) {
+        throw err;
+    }
+}
+
+async function clearProducts(manufacturerId) {
     try {
         const params = [manufacturerId];
         const sql = "DELETE FROM products WHERE manufacturer_id = $1"
