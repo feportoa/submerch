@@ -1,3 +1,5 @@
 *.sql
 *.txt
 fonts
+/ignored
+/node_modules

@@ -1,9 +1,11 @@
 # How to set up the project
 
-- Install Node.js and npm
+- Install Node.js (version 18.20.4 OR version 18 LTS) and npm
 - Install dependencies
 - Install postgresql
-- Set up data in postgresql
+- Set up data in postgresql:
+    - CREATE ROLE submerch WITH LOGIN PASSWORD 'submerchAdmin';
+    - CREATE DATABASE submerch OWNER TO submerch;
 
 ## The files
 
