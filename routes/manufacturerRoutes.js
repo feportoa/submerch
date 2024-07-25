@@ -26,7 +26,7 @@ router.post('/addManufacturer', async (req, res) => {
         
         await pgQuery(sql, params);
 
-        return res.status(200).json({ message: "New manufacturer added successfully." });
+        return res.status(201).json({ message: "New manufacturer added successfully." });
     } catch (err) {
         res.status(500).json({ message: 'Internal server error: ' + err.message });
         throw err;
@@ -51,7 +51,7 @@ router.delete('/removeManufacturer', async (req, res) => {
             
             await pgQuery(sql, params)
             
-            return res.status(200).json({ message: `Manufacturer of id ${ manufacturerData.id } deleted successfully.` });
+            return res.status(204).json({ message: `Manufacturer of id ${ manufacturerData.id } deleted successfully.` });
         } else {
             return res.status(404).json({ message: 'Manufacturer: "' + userReq.name + '" not found in database' });
         }

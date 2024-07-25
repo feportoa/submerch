@@ -40,7 +40,7 @@ router.post('/newProduct', async (req, res) => {
         const params = [userReq.name, userReq.description, userReq.is_new, userReq.technical_specs, userReq.price, userReq.manufacturer_id];
 
         pgQuery(sql, params)
-        return res.status(200).json({ message: "New product added successfully." });
+        return res.status(201).json({ message: "New product added successfully." });
     } catch (err) {
         res.status(500).json({ message: 'Internal server error: ' + err });
         throw err;
@@ -57,7 +57,7 @@ router.delete('/removeProduct', async (req, res) => {
         const sql = "DELETE FROM products WHERE id = $1;";
         await pgQuery(sql, params);
 
-        return res.status(200).json({ message: "Removed products successfully." });
+        return res.status(204).json({ message: "Removed products successfully." });
     } catch (err) {
         res.status(500).json({ message: 'Internal server error: ' + err.message });
         throw err;
