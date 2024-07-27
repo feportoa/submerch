@@ -1,3 +1,4 @@
+const bcrypt = require('bcrypt');
 const express = require('express');
 const { pgQuery } = require('../utils/db.js');
 
@@ -19,8 +20,10 @@ router.post('/addUser', async (req, res) => {
         const userReq = req.body;
         const userData = await userExists(userReq.email);
 
+        const hashedPassword = await hashPassword(userReq.password);
+
         let sql = 'INSERT INTO users (name, email, password, user_type) VALUES ($1, $2, $3, $4)';
-        let queryValues = [userReq.name, userReq.email, userReq.password, userReq.user_type];
+        let queryValues = [userReq.name, userReq.email, hashedPassword, userReq.user_type];
         if (userData.length > 0) return res.status(400).json({ message: "UNAUTHORIZED: User already exists." });
             
         await pgQuery(sql, queryValues);
@@ -90,6 +93,17 @@ async function hasUploads(id) {
     } catch (err) {
         throw err;
     }
+}
+
+async function hashPassword(plainPassword) {
+    const saltRounds = 10;
+    
+    return new Promise((resolve, reject) => {
+        bcrypt.hash(plainPassword, saltRounds, (err, hash) => {
+            if (err) reject(err);
+            resolve(hash);
+        });
+    });
 }
 
 module.exports = router;
