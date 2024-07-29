@@ -3,6 +3,7 @@ const userRoutes = require('./routes/userRoutes.js');
 const productRoutes = require('./routes/productRoutes.js');
 const manufacturerRoutes = require('./routes/manufacturerRoutes.js');
 const imageRoutes = require('./routes/imageRoutes.js');
+const { errorHandler } = require('./middleware/errorMiddleware.js');
 
 // Path import
 const path = require('path');
@@ -43,6 +44,9 @@ connectDB()
     app.use('/manufacturers/', manufacturerRoutes);
     app.use('/images/', imageRoutes);
 
+    // Middleware
+    app.use(errorHandler);
+    
     // Booting
     app.listen(PORT, HOST, () => {
         console.log(`App listening on ${HOST}:${PORT}`);
