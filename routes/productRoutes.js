@@ -3,9 +3,8 @@ const { pgQuery } = require('../utils/db.js');
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
     try {
-
         // Fetch the product with its related thumbnail
         const sql = `SELECT p.id AS product_id,
                             p.uno,
@@ -28,24 +27,22 @@ router.get('/', async (req, res) => {
 
         return res.status(200).json(queryRes);
     } catch (err) {
-        res.status(200).json({ message: 'Internal server error: ' + err.message });
-        throw err;
+        next(err);
     }
 });
 
-router.get('/all', async (req, res) => {
+router.get('/all', async (req, res, next) => {
     try {
         const sql = `SELECT * FROM products;`;
         const queryRes = await pgQuery(sql);
 
         return res.status(200).json(queryRes);
     } catch (err) {
-        res.status(500).json({ message: 'Internal server error: ' + err.message });
-        throw err;
+        next(err);
     }
 });
 
-router.get('/:uno', async (req, res) => {
+router.get('/:uno', async (req, res, next) => {
     try {
         const uno = req.params.uno;
         let obj = {}
@@ -85,12 +82,11 @@ router.get('/:uno', async (req, res) => {
 
         return res.status(200).json(obj);
     } catch (err) {
-        res.status(200).json({ message: 'Internal server error: ' + err.message });
-        throw err;
+        next(err);
     }
 });
 
-router.post('/newProduct', async (req, res) => {
+router.post('/newProduct', async (req, res, next) => {
     try {
         const userReq = req.body;
 
@@ -100,12 +96,11 @@ router.post('/newProduct', async (req, res) => {
         pgQuery(sql, params)
         return res.status(201).json({ message: "New product added successfully." });
     } catch (err) {
-        res.status(500).json({ message: 'Internal server error: ' + err });
-        throw err;
+        next(err);
     }
 });
 
-router.delete('/removeProduct', async (req, res) => {
+router.delete('/removeProduct', async (req, res, next) => {
     try {
         const userReq = req.body;
 
@@ -117,8 +112,7 @@ router.delete('/removeProduct', async (req, res) => {
 
         return res.status(204).json({ message: "Removed products successfully." });
     } catch (err) {
-        res.status(500).json({ message: 'Internal server error: ' + err.message });
-        throw err;
+        next(err);
     }
 });
 
