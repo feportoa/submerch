@@ -1,4 +1,4 @@
-const pgData = require('../psql-data.json')
+const pgData = require('../.env/psql-data.json')
 const { Client } = require('pg');
 
 const client = new Client({
@@ -23,13 +23,6 @@ async function pgQuery(sql, params=null) {
     try {
         const res = await client.query(sql, params);
         return res.rows;
-        // if (params == null) {
-        //     const res = await client.query(sql);
-        //     return res.rows;
-        // } else {
-        //     const res = await client.query(sql, params);
-        //     return res.rows;
-        // }
     } catch (err) {
         console.error("Error executing query: ", err);
         throw err;
