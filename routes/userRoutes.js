@@ -4,38 +4,84 @@ const { pgQuery } = require('../utils/db.js');
 
 const router = express.Router()
 
-router.get('/', async (req, res) => {
+router.get('/', /*authenticateToken, authorizeRole('ADMIN'),*/ async (req, res, next) => {
+    try {
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.get('/all', authenticateToken, authorizeRole('ADMIN'), async (req, res, next) => {
     try {
         const sql = "SELECT * FROM users;"
         const queryRes = await pgQuery(sql);
         return res.json(queryRes);
     } catch (err) {
-        console.error("Error fetching users: " + err);
-        res.status(500).json( { message: `Internal server error: ${err}`} );
+        next(err);
     }
 });
 
-router.post('/addUser', async (req, res) => {
+// TODO: Validate authentication in other routes
+router.post('/login', async (req, res, next) => {
+    try {
+        
+        const userData = req.body;
+
+        const user = await userExists(userData.email);
+        if(!user) return res.status(401).json({ message: 'Authentication failed' });
+
+        const passwordMatch = await bcrypt.compare(userData.password, user[0].password);
+        if(!passwordMatch) return res.status(401).json({ message: 'Authentication failed' });
+
+        const roleLevels = {
+            'ADMIN': 3,
+            'MANUFACTURER': 2,
+            'CLIENT': 1
+        }
+
+        const userId = user[0].id;
+        const roleLevel = roleLevels[user[0].user_type];
+
+        const token = jwt.sign({ userId, roleLevel }, env.JWT_SECRET, { expiresIn: '7d' });
+
+        return res.status(200).json({ token });
+    } catch (err) {
+        next(err);
+    }
+});
+
+
+router.post('/addUser', async (req, res, next) => {
     try {
         const userReq = req.body;
         const userData = await userExists(userReq.email);
+        
+        // Check if user already exists
+        if (userData.length > 0) return res.status(400).json({ message: "UNAUTHORIZED: User already exists." });
 
         const hashedPassword = await hashPassword(userReq.password);
+        let sql
+        let queryValues = []
 
-        let sql = 'INSERT INTO users (name, email, password, user_type) VALUES ($1, $2, $3, $4)';
-        let queryValues = [userReq.name, userReq.email, hashedPassword, userReq.user_type];
-        if (userData.length > 0) return res.status(400).json({ message: "UNAUTHORIZED: User already exists." });
-            
+        // Check if user_type field is filled and formats sql and query values
+        if (!userReq.user_type){
+            sql = 'INSERT INTO users (name, email, password) VALUES ($1, $2, $3)';
+            queryValues = [userReq.name, userReq.email, hashedPassword];
+        } 
+        else {
+            sql = 'INSERT INTO users (name, email, password, user_type) VALUES ($1, $2, $3, $4)';
+            queryValues = [userReq.name, userReq.email, hashedPassword, userReq.user_type];
+        }
+        
         await pgQuery(sql, queryValues);
 
         return res.status(201).json({ message: "User created successfuly." });
     } catch (err) {
-        console.error(err);
-        res.status(500).json( { message: `Internal server error: ${err.message}`} );
+        next(err);
     }
 });
 
-router.delete('/removeUser', async (req, res) => {
+router.delete('/removeUser', async (req, res, next) => {
     try {
         const userReq = req.body;
 
@@ -55,7 +101,7 @@ router.delete('/removeUser', async (req, res) => {
 
         return res.status(204).json({ message: "User \"" + userReq.email + "\" deleted successfully" })
     } catch (err) {
-        res.status(500).json({ message: "Internal server error: " + err.message });
+        next(err);
     }
 });
 

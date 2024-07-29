@@ -8,7 +8,7 @@ router.get('/', async (req, res) => {
 
         // Fetch the product with its related thumbnail
         const sql = `SELECT p.id AS product_id,
-                            p.uno
+                            p.uno,
                             p.name,
                             p.description,
                             p.is_new,
