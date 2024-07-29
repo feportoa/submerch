@@ -131,7 +131,7 @@ router.post('/login', async (req, res, next) => {
 });
 
 
-router.post('/addUser', async (req, res, next) => {
+router.post('/register', async (req, res, next) => {
     try {
         const userReq = req.body;
         const userData = await userExists(userReq.email);
@@ -223,13 +223,16 @@ async function hasUploads(id) {
 
 async function hashPassword(plainPassword) {
     const saltRounds = 10;
-    
-    return new Promise((resolve, reject) => {
-        bcrypt.hash(plainPassword, saltRounds, (err, hash) => {
-            if (err) reject(err);
-            resolve(hash);
+    try {
+        return new Promise((resolve, reject) => {
+            bcrypt.hash(plainPassword, saltRounds, (err, hash) => {
+                if (err) reject(err);
+                resolve(hash);
+            });
         });
-    });
+    } catch (err) {
+        throw err;
+    }
 }
 
 module.exports = router;
