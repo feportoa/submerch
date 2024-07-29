@@ -4,6 +4,7 @@ const productRoutes = require('./routes/productRoutes.js');
 const manufacturerRoutes = require('./routes/manufacturerRoutes.js');
 const imageRoutes = require('./routes/imageRoutes.js');
 const { errorHandler } = require('./middleware/errorMiddleware.js');
+const sessionMiddleware = require('./middleware/sessionMiddleware.js');
 
 // Path import
 const path = require('path');
@@ -20,6 +21,7 @@ const HOST = 'localhost';
 // Middleware
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
+app.use(sessionMiddleware);
 
 connectDB()
 .then(() => {
@@ -44,7 +46,7 @@ connectDB()
     app.use('/manufacturers/', manufacturerRoutes);
     app.use('/images/', imageRoutes);
 
-    // Middleware
+    // ErrorHandler needs to be the last middleware
     app.use(errorHandler);
     
     // Booting

@@ -46,7 +46,7 @@ router.get('/', /*authenticateToken, authorizeRole('ADMIN'),*/ async (req, res, 
                             i.is_thumb,
                             i.file_name,
                             i.file_type
-                    FROM images i WHERE users.uploader_id = $1;`*/
+                    FROM images i WHERE i.uploader_id = $1;`*/
         }
 
         let queryRes = await pgQuery(allSqlQueries.user);
@@ -104,11 +104,31 @@ router.get('/all', authenticateToken, authorizeRole('ADMIN'), async (req, res, n
 // TODO: Validate authentication in other routes
 router.post('/login', async (req, res, next) => {
     try {
-        
         const userData = req.body;
-
+        
         const user = await userExists(userData.email);
-        if(!user) return res.status(401).json({ message: 'Authentication failed' });
+        req.session.user = user;
+        req.session.user.cart = { // Cart items data should be passed to the payment gateway
+            items: {
+                totalItems: 0,
+                list: [
+                    /*{
+                        uno: 'xxxxx',
+                        price: 1234,
+                        quantity: 1,
+                        totalPrice: 1234
+                    }*/
+                ],
+                totalPrice: 0
+            }
+        };
+        
+        // Deleting sensitive info from session data
+        delete req.session.user.password;
+        delete req.session.user.id;
+        console.log(req.session);
+
+        if(!user || user.length < 1) return res.status(401).json({ message: 'Authentication failed' });
 
         const passwordMatch = await bcrypt.compare(userData.password, user[0].password);
         if(!passwordMatch) return res.status(401).json({ message: 'Authentication failed' });
@@ -135,10 +155,10 @@ router.post('/register', async (req, res, next) => {
     try {
         const userReq = req.body;
         const userData = await userExists(userReq.email);
-        
+
         // Check if user already exists
         if (userData.length > 0) return res.status(400).json({ message: "UNAUTHORIZED: User already exists." });
-
+        
         const hashedPassword = await hashPassword(userReq.password);
         let sql
         let queryValues = []
@@ -154,6 +174,32 @@ router.post('/register', async (req, res, next) => {
         }
         
         await pgQuery(sql, queryValues);
+        
+        let user = await userExists(userReq.email);
+        if(!user || user.length < 1) return res.status(401).json({ message: 'Authentication failed' });
+
+        // Setting up session
+        req.session.user = user;
+        req.session.user.cart = { // Cart items data should be passed to the payment gateway
+            items: {
+                totalItems: 0,
+                list: [
+                    /*{
+                        uno: 'xxxxx',
+                        price: 1234,
+                        quantity: 1,
+                        totalPrice: 1234
+                    }*/
+                ],
+                totalPrice: 0
+            }
+        };
+
+        console.log(req.session.user);
+
+        // Deleting sensitive info from session data
+        delete req.session.user.password;
+        delete req.session.user.id;
 
         return res.status(201).json({ message: "User created successfuly." });
     } catch (err) {
