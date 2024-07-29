@@ -1,11 +1,91 @@
 const bcrypt = require('bcrypt');
+const jwt = require('jsonwebtoken');
 const express = require('express');
+
 const { pgQuery } = require('../utils/db.js');
+const { authenticateToken, authorizeRole } = require('../middleware/authMiddleware.js');
+const env = require('../.env/secret.json');
 
 const router = express.Router()
 
 router.get('/', /*authenticateToken, authorizeRole('ADMIN'),*/ async (req, res, next) => {
     try {
+        const userData = {
+            user: null,
+            orders: null,
+            products: null,
+            images: null
+        }
+
+        // TODO: Create user_images table and connect images with users in the images attribute here.
+        const allSqlQueries = {
+            user: `SELECT u.id,
+                          u.name,
+                          u.email,
+                          u.user_type,
+                          u.created_at
+                   FROM users u;`,
+            orders: `SELECT o.id AS order_id,
+                            o.product_id,
+                            o.order_price,
+                            o.order_date
+                    FROM orders o
+                    JOIN users u ON u.id = o.user_id
+                    WHERE u.id = $1;`,
+            products: `SELECT p.id AS product_id,
+                              p.uno,
+                              p.name
+                        FROM products p
+                        JOIN orders o ON o.product_id = p.id
+                        WHERE o.user_id = $1`,
+            /*images: `SELECT i.id AS image_id,
+                            i.url,
+                            i.title,
+                            i.description,
+                            i.alt_text,
+                            i.is_thumb,
+                            i.file_name,
+                            i.file_type
+                    FROM images i WHERE users.uploader_id = $1;`*/
+        }
+
+        let queryRes = await pgQuery(allSqlQueries.user);
+        let resArr = [];
+
+        const promises = queryRes.map(async (element) => {
+            userData.user = element;
+
+            queryRes = await pgQuery(allSqlQueries.orders, [element.id]);
+            userData.orders = queryRes;
+            
+            queryRes = await pgQuery(allSqlQueries.products, [element.id]);
+            userData.products = queryRes;
+
+            return userData;
+        });
+        resArr = await Promise.all(promises);
+        
+        /*
+        const sql = `SELECT u.id,
+                        u.name,
+                        u.email,
+                        u.user_type,
+                        u.created_at,
+                        o.id AS order_id,
+                        o.product_id,
+                        o.order_price,
+                        o.order_date,
+                        p.id AS product_id,
+                        p.uno,
+                        p.name
+                    FROM users u
+                    JOIN user_orders uo ON uo.user_id = u.id
+                    JOIN orders o ON o.user_id = u.id
+                    JOIN products p ON o.product_id = p.id;`;
+
+        queryRes = await pgQuery(sql);
+        */
+        return res.status(200).json(resArr);
     } catch (err) {
         next(err);
     }
