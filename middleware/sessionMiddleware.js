@@ -5,7 +5,10 @@ const sessionMiddleware = session({
     secret: env.JWT_SECRET,
     resave: false,
     saveUninitialized: false,    
-    cookie: { secure: false } // Change to true when using HTTPS
+    cookie: { 
+        maxAge: 1000 * 60 * 60 * 24 * 7, // Age: 7 days
+        secure: env.NODE_ENV === 'production' // Change to true when on production (HTTPS instead of HTTP)
+     } 
 });
 
 module.exports = sessionMiddleware;
