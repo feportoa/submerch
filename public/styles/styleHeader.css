@@ -1,0 +1,176 @@
+@import url("https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap");
+
+/*Colores*/
+:root {
+  --first-color: #A29596;
+  --primary: #A29596;
+  --second-color: #33303D;
+  --black-color: #111111;
+  --white-color: #FFF;
+}
+
+/* typography */
+
+:root {
+  --body-font: 'Roboto', sans-serif;
+  --biggest-font-size: 1.5rem;
+  --big-font-size: 1.5rem;
+  --normal-font-size: 0.938rem;
+  --smaller-font-size: 0.75rem;
+}
+
+@media screen and (min-width: 968px) {
+  :root {
+    --biggest-font-size: 3.25rem;
+    --big-font-size: 2.25rem;
+    --normal-font-size: 1rem;
+    --smaller-font-size: 0.813rem;
+  }
+}
+
+/* z index */
+
+:root {
+  --z-back: -10;
+  --z-normal: 1;
+  --z-tooltip: 10;
+  --z-fixed: 100;
+  --z-modal: 1000;
+}
+
+/* BASE */
+
+*,
+::before,
+::after {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+
+body {
+  margin: 3rem 0 0 0;
+  font-family: var(--body-font);
+  background-color: var(--white-color);
+  color: var(--black-color);
+}
+
+h1,
+h2,
+h3,
+p {
+  margin: 0;
+}
+
+ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+}
+
+a {
+  text-decoration: none;
+}
+
+/*=====  LAYOUT =====*/
+
+.bd-grid {
+  max-width: 1200px;
+  margin-left: 1rem;
+  margin-right: 1rem;
+}
+
+.l-header {
+  width: 100%;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: var(--z-fixed);
+  background-color: var(--white-color);
+}
+
+/*------PAGES-----*/
+
+.nav {
+  height: 3rem;
+  display: -webkit-box;
+  display: -ms-flexbox;
+  display: flex;
+  -webkit-box-pack: justify;
+  -ms-flex-pack: justify;
+  justify-content: space-between;
+  -webkit-box-align: center;
+  -ms-flex-align: center;
+  align-items: center;
+}
+
+@media screen and (max-width: 968px) {
+  .nav_menu {
+    position: fixed;
+    left: -100%;
+    top: 3rem;
+    background-color: var(--white-color);
+    width: 80%;
+    height: 100%;
+    padding: 2rem;
+    z-index: var(--z-fixed);
+    -webkit-transition: .3s;
+    transition: .3s;
+  }
+}
+
+.nav_item {
+  margin-bottom: 2rem;
+  font-weight: 700;
+}
+
+.nav_link {
+  color: var(--black-color);
+}
+
+.nav_toggle {
+  cursor: pointer;
+}
+
+/* menu */
+.show {
+  left: 0;
+}
+
+/*---- Home----*/
+
+
+/*---- MEDIA QUERIS ---*/
+@media screen and (min-width: 968px) {
+  body {
+    margin: 0;
+  }
+
+  .nav {
+    height: 4rem;
+  }
+
+  .nav_list {
+    display: -webkit-box;
+    display: -ms-flexbox;
+    display: flex;
+  }
+
+  .nav_item {
+    margin-right: 3rem;
+    margin-bottom: 0;
+  }
+
+  .nav_toggle {
+    display: none;
+  }
+}
+  
+
+  
+
+@media screen and (min-width: 1200px) {
+  .bd-grid {
+    margin-left: auto;
+    margin-right: auto;
+  }
+}
