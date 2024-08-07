@@ -4,17 +4,12 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>products_page</title>
-    <link rel="stylesheet" href="style.css">
+    <link rel="stylesheet" href="styles/style.css">
 </head>
 <body>
-    <nav>
-        <img src="" alt="Logo" class="logo">
-        <ul>
-            <li><a href="#home">Home</a></li>
-            <li><a href="#products">Produtos</a></li>
-            <li><a href="#contact">Contato</a></li>
-        </ul>
-    </nav>
+    <!-- MAIN HEADER -->
+    <div id="header-container"></div>
+
     
     <div class="subtitulo">
         
@@ -34,7 +29,7 @@
         
         <main>
             <div class="card">
-                <img src="submarino2.jfif" alt="Produto 1">
+                <img src="/images/submarino1.jfif" alt="Produto 1">
                 <h3>Produto 1</h3>
                 <p>Descrição do Produto 1.</p>
                 <p>Preço: R$ 100,00</p>
@@ -96,5 +91,20 @@
 
         </main>
     </div>
+
+    <script>
+        // Função para carregar o header
+        function loadHeader() {
+            fetch('header.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('header-container').innerHTML = data;
+                })
+                .catch(error => console.log('Erro ao carregar o header:', error));
+        }
+
+        // Chame a função para carregar o header
+        loadHeader();
+    </script>
 </body>
 </html>

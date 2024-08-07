@@ -1,89 +1,92 @@
 <!DOCTYPE html>
 <html lang="en">
-    <head>
-        <meta charset="UTF-8">
-        <meta name="viewport" content="width=device-width, initial-scale=1.0">
-        <link rel="shortcut icon" href="">
-        <link rel="stylesheet" href="public/styles/styleHeader.css">
-        <title>product_details</title>
-    </head>
-    <body>
-        <!-- MAIN HEADER -->
-        <div id="header"></div>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="shortcut icon" href="">
+    <link rel="stylesheet" href="styles/details.css">
+    <title>product_details</title>
+ 
+</head>
+<body>
+    <div id="header-container"></div>
 
-        <!-- HOME  -->
-        <main class="l-main bd-grid">
-            <div class="home">
-                <!-- SNEAKER  -->
-                <div class="sneaker">
-                    <div class="sneaker_figure">
-                    </div>
-
-                    <div>
-                        <img src="assets/img/submarino1.jfif" alt="" class="sneaker_img shows" color="#A29596">
-                        <img src="assets/img/submarino2.jfif" alt="" class="sneaker_img" color="#111111">
-                        <img src="assets/img/submarino3.jfif" alt="" class="sneaker_img" color="#f5f5f5">
-                    </div>
-
-                    <div class="sneaker_colors">
-                        <span class="sneaker_color sneaker_colors-one active" primary="#A29596" color="#A29596"></span>
-                        <span class="sneaker_color sneaker_colors-two " primary="#111111" color="#111111"></span>
-                        <span class="sneaker_color sneaker_colors-two " primary="#f5f5f5" color="#f5f5f5"></span>
-
-                    </div>
+    <!-- HOME  -->
+    <main class="l-main bd-grid">
+        <!-- Conteúdo da página de detalhes do produto -->
+        <div class="home">
+            <!-- SNEAKER  -->
+            <div class="sneaker">
+                <div class="sneaker_figure">
                 </div>
 
-                <!-- IFORMACION -->
-                <div class="info">
-                    <!-- DATA -->
-                    <div class="data">
-                        <span class="data_subtitle">OceanGate</span>
-                        <h1 class="data_title">Titan</h1>
-                        <p class="data_description"> Feito com fibra de carbono e titânio.</p>
-                    </div>
+                <div>
+                    <img src="assets/img/submarino1.jfif" alt="" class="sneaker_img shows" color="#A29596">
+                    <img src="assets/img/submarino2.jfif" alt="" class="sneaker_img" color="#111111">
+                    <img src="assets/img/submarino3.jfif" alt="" class="sneaker_img" color="#f5f5f5">
+                </div>
 
-                    <!--  ACTIONS  -->
-                    <div class="actions">
-                        <!-- SIZE  -->
-                        <div class="size">
-                            <h3 class="size_title">Capacity</h3>
-                            <div class="size_content">
-                                <span class="size_size active">
-                                    4
-                                </span>
-                                <span class="size_size">
-                                    5
-                                </span>
-                                <span class="size_size">
-                                    6
-                                </span>
-                            </div>
-                        </div>
-
-                        <!--  Quantity  -->
-                        <div class="quant">
-                            <h3 class="quant_title">Quantity</h3>
-                            <div class="quant_content"> 
-                                <span>-</span>
-                                <span>1</span>
-                                <span>+</span>
-                            </div>
-                        </div>
-                    </div>
-
-                    <!--  Price  -->
-                    <div class="price">
-                        <span class="price_title">$ 150,990.70</span>
-                        <a href="#" class="price_button">ADD TO CART</a>
-                    </div>
+                <div class="sneaker_colors">
+                    <span class="sneaker_color sneaker_colors-one active" primary="#A29596" color="#A29596"></span>
+                    <span class="sneaker_color sneaker_colors-two " primary="#111111" color="#111111"></span>
+                    <span class="sneaker_color sneaker_colors-two " primary="#f5f5f5" color="#f5f5f5"></span>
                 </div>
             </div>
-        </main>
 
-        <!-- MAIN -->
-        <script src="js/main.js"></script>
+            <!-- INFORMACION -->
+            <div class="info">
+                <!-- DATA -->
+                <div class="data">
+                    <span class="data_subtitle">OceanGate</span>
+                    <h1 class="data_title">Titan</h1>
+                    <p class="data_description">Feito com fibra de carbono e titânio.</p>
+                </div>
 
-     
+                <!-- ACTIONS -->
+                <div class="actions">
+                    <!-- SIZE -->
+                    <div class="size">
+                        <h3 class="size_title">Capacity</h3>
+                        <div class="size_content">
+                            <span class="size_size active">4</span>
+                            <span class="size_size">5</span>
+                            <span class="size_size">6</span>
+                        </div>
+                    </div>
 
-    </body>
+                    <!-- Quantity -->
+                    <div class="quant">
+                        <h3 class="quant_title">Quantity</h3>
+                        <div class="quant_content">
+                            <span>-</span>
+                            <span>1</span>
+                            <span>+</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Price -->
+                <div class="price">
+                    <span class="price_title">$ 150,990.70</span>
+                    <a href="#" class="price_button">ADD TO CART</a>
+                </div>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Função para carregar o header
+        function loadHeader() {
+            fetch('header.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('header-container').innerHTML = data;
+                })
+                .catch(error => console.log('Erro ao carregar o header:', error));
+        }
+
+        // Chame a função para carregar o header
+        loadHeader();
+    </script>
+</body>
 </html>

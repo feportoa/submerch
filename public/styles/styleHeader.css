@@ -79,7 +79,7 @@ a {
   margin-right: 1rem;
 }
 
-.l-header {
+.header {
   width: 100%;
   position: fixed;
   top: 0;
@@ -125,6 +125,10 @@ a {
 
 .nav_link {
   color: var(--black-color);
+}
+
+.nav_logo img{
+  height: 60px;
 }
 
 .nav_toggle {
