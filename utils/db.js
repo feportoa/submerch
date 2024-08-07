@@ -1,15 +1,16 @@
+const { connect_timeout } = require('pg/lib/defaults');
 const pgData = require('../.env/psql-data.json')
 const { Client } = require('pg');
 
-const client = new Client({
-    user: pgData.user,
-    host: pgData.host,
-    port: pgData.port,
-    password: pgData.password,
-    database: pgData.database
-});
 
-async function connectDB() {
+async function pgConnection() {
+    const client = new Client({
+        user: pgData.user,
+        host: pgData.host,
+        port: pgData.port,
+        password: pgData.password,
+        database: pgData.database
+    });
     try {
         await client.connect();
         console.log("Connected to PostgreSQL");
@@ -27,6 +28,21 @@ async function pgQuery(sql, params=null) {
         console.error("Error executing query: ", err);
         throw err;
     }
+}
+
+async function connectDB() {
+    try {
+        await pgConnection();
+        return;
+    } catch (err) {
+        console.error("Database connection error: " + err.stack);
+        await sleep(5000);
+        return connectDB();
+    }
+}
+
+async function sleep(ms) {
+    return new Promise(res => setTimeout(res, ms));
 }
 
 module.exports = {

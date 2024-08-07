@@ -23,37 +23,41 @@ app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(sessionMiddleware);
 
-connectDB()
-.then(() => {
+connectDB();
 
-    // Defining different paths
-    const publicPath = path.join(__dirname, 'public');
-    const staticPath = path.join(publicPath, 'images');
-    const htmlPath = path.join(publicPath, 'html');
-    
-    // Serves html files
-    app.use(express.static(htmlPath));
-    
-    // Serves JavaScript and CSS files (Used by html)
-    app.use(express.static(publicPath));
+// Defining different paths
+const publicPath = path.join(__dirname, 'public');
+const staticPath = path.join(publicPath, 'images');
+const htmlPath = path.join(publicPath, 'html');
 
-    // Serves static images
-    app.use('/static', express.static(staticPath));
-    
-    // Routes
-    app.use('/users/', userRoutes);
-    app.use('/products/', productRoutes);
-    app.use('/manufacturers/', manufacturerRoutes);
-    app.use('/images/', imageRoutes);
+// Serves html files
+app.use(express.static(htmlPath));
 
-    // ErrorHandler needs to be the last middleware
-    app.use(errorHandler);
-    
-    // Booting
-    app.listen(PORT, HOST, () => {
-        console.log(`App listening on ${HOST}:${PORT}`);
-    });
-})
-.catch(err => {
-    console.error("Error connecting to the database: ", err)
-})
+// Serves JavaScript and CSS files (Used by html)
+app.use(express.static(publicPath));
+
+// Serves static images
+app.use('/static', express.static(staticPath));
+
+// Routes
+app.use('/users/', userRoutes);
+app.use('/products/', productRoutes);
+app.use('/manufacturers/', manufacturerRoutes);
+app.use('/images/', imageRoutes);
+
+// ErrorHandler needs to be the last middleware
+app.use(errorHandler);
+
+// Booting
+app.listen(PORT, HOST, () => {
+    console.log(`App listening on ${HOST}:${PORT}`);
+});
+
+// function conTry() {
+//     connectDB()
+//     .then()
+//     .catch(async err => {
+//         console.error(err);
+//         await new Promise(res => setTimeout(res, 5000)); // Retry connection every 5 seconds
+//     });
+// }
