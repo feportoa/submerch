@@ -11,7 +11,7 @@ const { pgQuery } = require('../utils/db.js');
 const express = require('express');
 const router = express.Router();
 
-router.get('/:image_name', async (req, res) => {
+router.get('/:image_name', async (req, res, next) => {
     try {
         const imagePath = path.join(__dirname, '..', 'public', 'images', req.params.image_name);
 
@@ -23,7 +23,7 @@ router.get('/:image_name', async (req, res) => {
 
         return res.status(200).send(imageBuffer);
     } catch (err) {
-        return res.status(500).json({ message: err.message });
+        next(err);
     }
 });
 

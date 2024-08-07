@@ -5,19 +5,18 @@ const { pgQuery } = require('../utils/db.js')
 
 const router = express.Router();
 
-router.get('/', async (req, res) => {
+router.get('/', async (req, res, next) => {
     try {
         const sql = "SELECT * FROM manufacturers;";
         const queryRes = await pgQuery(sql);
 
         return res.status(200).json(queryRes);
     } catch (err) {
-        res.status(500).json({ message: 'Internal server error: ' + err.message });
-        throw err;
+        next(err);
     }
 });
 
-router.post('/addManufacturer', async (req, res) => {
+router.post('/addManufacturer', async (req, res, next) => {
     try {
         const userReq = req.body;
     
@@ -26,14 +25,13 @@ router.post('/addManufacturer', async (req, res) => {
         
         await pgQuery(sql, params);
 
-        return res.status(200).json({ message: "New manufacturer added successfully." });
+        return res.status(201).json({ message: "New manufacturer added successfully." });
     } catch (err) {
-        res.status(500).json({ message: 'Internal server error: ' + err.message });
-        throw err;
+        next(err);
     }
 });
 
-router.delete('/removeManufacturer', async (req, res) => {
+router.delete('/removeManufacturer', async (req, res, next) => {
     try {
         const userReq = req.body;
     
@@ -51,13 +49,12 @@ router.delete('/removeManufacturer', async (req, res) => {
             
             await pgQuery(sql, params)
             
-            return res.status(200).json({ message: `Manufacturer of id ${ manufacturerData.id } deleted successfully.` });
+            return res.status(204).json({ message: `Manufacturer of id ${ manufacturerData.id } deleted successfully.` });
         } else {
             return res.status(404).json({ message: 'Manufacturer: "' + userReq.name + '" not found in database' });
         }
     } catch (err) {
-        res.status(500).json({ message: 'Internal server error: ' + err.message });
-        throw err;
+        next(err);
     }
 });
 
