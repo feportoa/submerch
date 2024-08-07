@@ -2,9 +2,16 @@ const { connect_timeout } = require('pg/lib/defaults');
 const pgData = require('../.env/psql-data.json')
 const { Client } = require('pg');
 
+let client = new Client({
+    user: pgData.user,
+    host: pgData.host,
+    port: pgData.port,
+    password: pgData.password,
+    database: pgData.database
+});
 
 async function pgConnection() {
-    const client = new Client({
+    client = new Client({
         user: pgData.user,
         host: pgData.host,
         port: pgData.port,
