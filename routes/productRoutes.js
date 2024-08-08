@@ -78,6 +78,15 @@ router.get('/:uno', async (req, res, next) => {
 
 router.post('/newProduct', async (req, res, next) => {
     try {
+        /* 
+        * TODO
+        * Use Create Product API in stripe to create a product
+        * Use Create Price API in stripe to create a price for the product
+        * https://docs.stripe.com/get-started/development-environment?lang=node
+        * 
+        * Later, you'll need a PaymentIntent in app.js
+        */
+
         const userReq = req.body;
 
         const sql = "INSERT INTO products (name, description, is_new, technical_specs, price, manufacturer_id) VALUES ($1, $2, $3, $4, $5, $6);";
