@@ -43,10 +43,15 @@ router.get('/:uno', async (req, res, next) => {
         let manufacturerId = productData[0].manufacturer_id;
         delete obj.product[0].manufacturer_id; // Remove unecessary data from product
 
-        sql = `SELECT * FROM product_images WHERE product_id = $1;`;
-        imagesId = await pgQuery(sql, [productData[0].id]);
+        let [imagesId, manufacturerData] = await Promise.all([
+            pgQuery(`SELECT * FROM product_images WHERE product_id = $1;`, [productData[0].id]),
+            pgQuery("SELECT * FROM manufacturers WHERE id = $1;", [manufacturerId])
+        ]);
+
+        // sql = `SELECT * FROM product_images WHERE product_id = $1;`;
+        // imagesId = await pgQuery(sql, [productData[0].id]);
         
-        imagesId.forEach(async (element) => {
+        let images = imagesId.map(async (element) => {
             queryRes = await pgQuery(`SELECT id AS image_id,
                                              url,
                                              title,
@@ -56,13 +61,13 @@ router.get('/:uno', async (req, res, next) => {
                                              file_name,
                                              file_type 
                       FROM images WHERE id = $1 AND is_thumb = FALSE;`, [element.image_id]);
-            
-            obj.images.push(...queryRes);
+            return queryRes[0];
         });
 
-        sql = `SELECT * FROM manufacturers WHERE id = $1;`;
-        let manufacturerData = await pgQuery(sql, [manufacturerId]);
+        // sql = `SELECT * FROM manufacturers WHERE id = $1;`;
+        // let manufacturerData = await pgQuery(sql, [manufacturerId]);
 
+        obj.images = images;
         obj.manufacturer = manufacturerData;
 
         return res.status(200).json(obj);
