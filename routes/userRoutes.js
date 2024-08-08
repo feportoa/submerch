@@ -10,11 +10,13 @@ const router = express.Router()
 
 router.get('/', /*authenticateToken, authorizeRole('ADMIN'),*/ async (req, res, next) => {
     try {
-        const userData = {
-            user: null,
-            orders: null,
-            products: null,
-            images: null
+        const User = class {
+            constructor() {
+                this.user = null,
+                this.orders = null,
+                this.products = null,
+                this.images = null
+            }
         }
 
         // TODO: Create user_images table and connect images with users in the images attribute here.
@@ -48,22 +50,25 @@ router.get('/', /*authenticateToken, authorizeRole('ADMIN'),*/ async (req, res, 
                             i.file_type
                     FROM images i WHERE i.uploader_id = $1;`*/
         }
-
-        let queryRes = await pgQuery(allSqlQueries.user);
+        
+        let userRes = await pgQuery(allSqlQueries.user);
         let resArr = [];
-
-        const promises = queryRes.map(async (element) => {
-            userData.user = element;
-
-            queryRes = await pgQuery(allSqlQueries.orders, [element.id]);
-            userData.orders = queryRes;
+        console.log(userRes);
+        
+        for (let i = 0; i < userRes.length; i++) {
+            let user = new User();
+            user.user = userRes[i];
             
-            queryRes = await pgQuery(allSqlQueries.products, [element.id]);
-            userData.products = queryRes;
+            user.orders = await pgQuery(allSqlQueries.orders, [userRes[i].id]);
+            console.info(user.orders);
 
-            return userData;
-        });
-        resArr = await Promise.all(promises);
+            user.products = await pgQuery(allSqlQueries.products, [userRes[i].id]);
+            console.info(user.products);
+            
+            resArr.push(user);
+        };
+        // resArr = await Promise.all(promises);
+        // console.info(resArr);
         
         /*
         const sql = `SELECT u.id,
@@ -126,7 +131,6 @@ router.post('/login', async (req, res, next) => {
         // Deleting sensitive info from session data
         delete req.session.user.password;
         delete req.session.user.id;
-        console.log(req.session);
 
         if(!user || user.length < 1) return res.status(401).json({ message: 'Authentication failed' });
 
@@ -194,8 +198,6 @@ router.post('/register', async (req, res, next) => {
                 totalPrice: 0
             }
         };
-
-        console.log(req.session.user);
 
         // Deleting sensitive info from session data
         delete req.session.user.password;
