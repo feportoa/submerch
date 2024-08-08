@@ -6,25 +6,10 @@ const router = express.Router();
 router.get('/', async (req, res, next) => {
     try {
         // Fetch the product with its related thumbnail
-        const sql = `SELECT p.id AS product_id,
-                            p.uno,
-                            p.name,
-                            p.description,
-                            p.is_new,
-                            p.price,
-                            p.quantity,
-                            p.is_available,
-                            p.created_at,
-                            i.url,
-                            i.is_thumb,
-                            i.alt_text,
-                            m.name AS manufacturer_name FROM products p
-        JOIN product_images pi ON p.id = pi.product_id
-        JOIN manufacturers m ON m.id = p.manufacturer_id
-        JOIN images i ON i.id = pi.image_id WHERE i.is_thumb = TRUE;`
+        const sql = `SELECT * FROM all_product_related();`
 
         const queryRes = await pgQuery(sql);
-
+        
         return res.status(200).json(queryRes);
     } catch (err) {
         next(err);
