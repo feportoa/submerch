@@ -1,7 +1,0 @@
-{
-    "user": "submerch",
-    "host": "localhost",
-    "port": 5432,
-    "password": "submerchAdmin",
-    "database": "submerch"
-}
