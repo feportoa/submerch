@@ -16,7 +16,7 @@ const { connectDB } = require('./utils/db.js');
 const express = require('express');
 const app = express();
 const PORT = 8080;
-const HOST = 'localhost';
+const HOST = '0.0.0.0';
 
 // Middleware
 app.use(express.json());

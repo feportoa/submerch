@@ -1,0 +1,7 @@
+/node_modules
+*.sql
+*.txt
+fonts
+/ignored
+readme.md
+/docs
