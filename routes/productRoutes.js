@@ -60,14 +60,14 @@ router.get('/:uno', async (req, res, next) => {
                                              is_thumb,
                                              file_name,
                                              file_type 
-                      FROM images WHERE id = $1 AND is_thumb = FALSE;`, [element.image_id]);
+                      FROM images WHERE id = $1;`, [element.image_id]);
             return queryRes[0];
         });
 
         // sql = `SELECT * FROM manufacturers WHERE id = $1;`;
         // let manufacturerData = await pgQuery(sql, [manufacturerId]);
-
-        obj.images = images;
+        
+        obj.images = await Promise.all(images);
         obj.manufacturer = manufacturerData;
 
         return res.status(200).json(obj);
