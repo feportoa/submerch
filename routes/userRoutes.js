@@ -6,7 +6,7 @@ const { pgQuery } = require('../utils/db.js');
 const { authenticateToken, authorizeRole } = require('../middleware/authMiddleware.js');
 const env = require('../.env/secret.json');
 
-const router = express.Router()
+const router = express.Router();
 
 router.get('/', /*authenticateToken, authorizeRole('ADMIN'),*/ async (req, res, next) => {
     try {
@@ -17,7 +17,7 @@ router.get('/', /*authenticateToken, authorizeRole('ADMIN'),*/ async (req, res, 
                 this.products = null,
                 this.images = null
             }
-        }
+        };
 
         // TODO: Create user_images table and connect images with users in the images attribute here.
         const allSqlQueries = {
@@ -53,22 +53,17 @@ router.get('/', /*authenticateToken, authorizeRole('ADMIN'),*/ async (req, res, 
         
         let userRes = await pgQuery(allSqlQueries.user);
         let resArr = [];
-        console.log(userRes);
         
         for (let i = 0; i < userRes.length; i++) {
             let user = new User();
             user.user = userRes[i];
             
             user.orders = await pgQuery(allSqlQueries.orders, [userRes[i].id]);
-            console.info(user.orders);
 
             user.products = await pgQuery(allSqlQueries.products, [userRes[i].id]);
-            console.info(user.products);
             
             resArr.push(user);
         };
-        // resArr = await Promise.all(promises);
-        // console.info(resArr);
         
         /*
         const sql = `SELECT u.id,
@@ -216,10 +211,10 @@ router.delete('/removeUser', async (req, res, next) => {
         const userData = await userExists(userReq.email);
 
         // If user does NOT exists, returns
-        if (!userData) return res.status(500).json({ message: `User \"${userReq.email}\" does not exists in database` });
+        if (!userData || !(userData.length > 0)) return res.status(500).json({ message: `User \"${userReq.email}\" does not exists in database` });
         
         // If user has dependencies and haven't forceDeleted, returns
-        const hasDependencies = await hasUploads(userData.id);
+        const hasDependencies = await hasUploads(userData[0].id);
         if (hasDependencies && !userReq.forceDelete) return res.status(403).json({ message: "FORBIDDEN: Cannot delete user with uploads. Set forceDelete to true to override." });
         
         // If user forceDeletes the dependencies, continue
@@ -252,15 +247,14 @@ async function userExists(email) {
 async function hasUploads(id) {
     try {
         const params = [id];
-        
-        let sql = "SELECT * FROM user_orders WHERE user_id = $1;";
-        const user_orders = await pgQuery(sql, params);
-
-        sql = "SELECT * FROM images WHERE uploader_id = $1;"
-        const images = await pgQuery(sql, params);
-
-        sql = "SELECT * FROM orders WHERE user_id = $1;"
-        const orders = await pgQuery(sql, params);
+        let sqlUser = "SELECT * FROM user_orders WHERE user_id = $1;";
+        let sqlImages = "SELECT * FROM images WHERE uploader_id = $1;"
+        let sqlOrders = "SELECT * FROM orders WHERE user_id = $1;"
+        let [user_orders, images, orders] = await Promise.all([
+        pgQuery(sqlUser, params),
+        pgQuery(sqlImages, params),
+        pgQuery(sqlOrders, params)
+        ]);
 
         // If has relation, returns true
         return (user_orders.length > 0 || images.length > 0 || orders.length > 0); 
