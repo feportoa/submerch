@@ -452,3 +452,91 @@ a {
     margin-right: auto;
   }
 }
+
+/* Estilo para a seção de detalhes do produto */
+.product-details {
+  margin-top: 40px;
+  background-color: #fff;
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+}
+
+.product-details h3 {
+  font-size: 24px;
+  margin-bottom: 20px;
+  color: #333;
+}
+
+.product-info p {
+  margin: 10px 0;
+  font-size: 16px;
+  color: #555;
+}
+
+.product-info strong {
+  color: #000;
+}
+
+/* Estilo para a seção de Especificações Técnicas */
+.technical-specifications {
+  margin-top: 20px;
+}
+
+.technical-specifications h4 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.technical-specifications p, .technical-specifications ul {
+  margin: 10px 0;
+  font-size: 16px;
+  color: #555;
+}
+
+.technical-specifications ul {
+  list-style: none;
+  padding: 0;
+}
+
+.technical-specifications li {
+  margin-left: 20px;
+}
+
+/* Estilo para a seção de Imagens do Produto */
+.product-images {
+  margin-top: 30px;
+}
+
+.product-images h4 {
+  font-size: 20px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.product-images input[type="file"] {
+  margin-bottom: 10px;
+}
+
+.image-config {
+  margin-top: 10px;
+}
+
+.image-config h5 {
+  font-size: 18px;
+  margin-bottom: 10px;
+  color: #333;
+}
+
+.image-config p {
+  margin: 10px 0;
+  font-size: 16px;
+  color: #555;
+}
+
+.image-config select {
+  padding: 5px;
+  border: 1px solid #ddd;
+  border-radius: 4px;
+}
