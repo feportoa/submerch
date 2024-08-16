@@ -1,5 +1,3 @@
-console.log('JavaScript está funcionando!'); // Teste básico
-
 /*----- MENU -----*/
 const showMenu = (toggleId,navId) =>{
     const toggle = document.getElementById(toggleId),
@@ -29,6 +27,7 @@ function changeColor(){
     let sneakerColor = document.querySelector(`.sneaker_img[color="${color}"]`);
 
     colors.forEach(c => c.classList.remove('active'));
+    
     this.classList.add('active');
 
     document.documentElement.style.setProperty('--primary', primary);
@@ -41,7 +40,28 @@ sizes.forEach(size => size.addEventListener('click', changeSize));
 colors.forEach(c => c.addEventListener('click', changeColor));
 
 
+ // Função para carregar o header
+ function loadHeader() {
+    fetch('header.html')
+        .then(response => response.text())
+        .then(data => {
+            document.getElementById('header-container').innerHTML = data;
+        })
+        .catch(error => console.log('Erro ao carregar o header:', error));
+}
+
+// Chame a função para carregar o header
+loadHeader();
 
 
-
+document.addEventListener('DOMContentLoaded', () => {
+    const navLinks = document.querySelectorAll('.nav_link');
+    const currentPath = window.location.pathname;
+  
+    navLinks.forEach(link => {
+      if (link.getAttribute('href') === currentPath) {
+        link.classList.add('active');
+      }
+    });
+  });
 

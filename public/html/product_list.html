@@ -126,19 +126,8 @@
         </main>
     </div>
 
-    <script>
-        // Função para carregar o header
-        function loadHeader() {
-            fetch('header.html')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('header-container').innerHTML = data;
-                })
-                .catch(error => console.log('Erro ao carregar o header:', error));
-        }
 
-        // Chame a função para carregar o header
-        loadHeader();
-    </script>
+    
+    <script src="/js/main.js"></script>
 </body>
 </html>
