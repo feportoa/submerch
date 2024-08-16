@@ -124,8 +124,30 @@ a {
 }
 
 .nav_link {
-  color: var(--black-color);
+  position: relative;
+  padding-bottom: 5px;
+  text-decoration: none;
+  color: black; /* Cor padrão */
 }
+
+.nav_link::after {
+  content: '';
+  position: absolute;
+  width: 0;
+  height: 2px;
+  background-color: #000; /* Cor da linha */
+  left: 0;
+  bottom: 0;
+  transition: width 0.3s;
+}
+
+/* Linha aparece no hover ou na página ativa */
+.nav_link:hover::after, 
+.nav_link.active::after {
+  width: 100%;
+}
+
+
 
 .nav_logo img{
   height: 60px;

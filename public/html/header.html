@@ -1,23 +1,29 @@
-<!-- header.html -->
-<link rel="stylesheet" href="styles/header.css">
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Test Page</title>
+    <link rel="stylesheet" href="styles/header.css">
+</head>
+<body>
 
 <!-- MAIN HEADER -->
 <header class="header">
-    <!-- NAV  -->
     <nav class="nav bd-grid">
         <div class="nav_toggle" id="nav-toggle">
             <img src="images/icon-menu.svg" alt="">
         </div>
 
         <div>
-            <a class="nav_logo"><img src="images/logoSubmarino.jpg" alt=""></a>
+            <a href="#" class="nav_logo"><img src="images/logoSubmarino.jpg" alt=""></a>
         </div>
 
         <!-- NAV LIST -->
         <div class="nav_menu" id="nav-menu">
             <ul class="nav_list">
                 <li class="nav_item"><a href="" class="nav_link">SERVICES</a></li>
-                <li class="nav_item"><a href="" class="nav_link">PRODUCT</a></li>
+                <li class="nav_item"><a href="product_list.html" class="nav_link">PRODUCTS</a></li>
                 <li class="nav_item"><a href="" class="nav_link">ABOUT</a></li>
                 <li class="nav_item"><a href="" class="nav_link">STORES</a></li>
                 <li class="nav_item"><a href="" class="nav_link">SALE</a></li>
@@ -30,4 +36,25 @@
     </nav>
 </header>
 
-<script src="js/main.js"></script>
+<!-- Adicione o script aqui -->
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const currentPath = window.location.pathname.split("/").pop(); // Obtém o nome do arquivo da URL atual
+    console.log('currentPath:', currentPath); // Verifica o nome do arquivo da página atual
+
+    const navLinks = document.querySelectorAll('.nav_link');
+
+    navLinks.forEach(link => {
+        const linkPath = link.getAttribute('href').split("/").pop();
+        console.log('Comparando:', linkPath, 'com', currentPath); // Verifica os caminhos
+
+        if (linkPath === currentPath) {
+            console.log('Match encontrado para:', linkPath); // Log quando há correspondência
+            link.classList.add('active');
+        }
+    });
+});
+</script>
+
+</body>
+</html>

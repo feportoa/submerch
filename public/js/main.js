@@ -1,3 +1,5 @@
+console.log('JavaScript está funcionando!'); // Teste básico
+
 /*----- MENU -----*/
 const showMenu = (toggleId,navId) =>{
     const toggle = document.getElementById(toggleId),
@@ -37,3 +39,9 @@ function changeColor(){
 
 sizes.forEach(size => size.addEventListener('click', changeSize));
 colors.forEach(c => c.addEventListener('click', changeColor));
+
+
+
+
+
+

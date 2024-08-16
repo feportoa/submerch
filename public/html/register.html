@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Formulário de Produto</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            margin: 20px;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+
+        h1, h2 {
+            color: #333;
+        }
+
+        form {
+            background: #fff;
+            padding: 20px;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 5px;
+            font-weight: bold;
+        }
+
+        .form-group input, 
+        .form-group textarea, 
+        .form-group select {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid #ccc;
+            border-radius: 4px;
+        }
+
+        .form-group input[type="checkbox"],
+        .form-group input[type="radio"] {
+            width: auto;
+        }
+
+        .form-group .dimensions-group input {
+            width: calc(33.33% - 10px);
+            margin-right: 10px;
+        }
+
+        .form-group .dimensions-group input:last-child {
+            margin-right: 0;
+        }
+
+        .form-section {
+            margin-top: 30px;
+        }
+
+        .passenger-group {
+            display: flex;
+            gap: 10px;
+        }
+
+        .image-config {
+            display: flex;
+            gap: 10px;
+        }
+
+        .image-config input[type="checkbox"] {
+            width: auto;
+        }
+
+        button {
+            display: inline-block;
+            padding: 10px 15px;
+            font-size: 16px;
+            background-color: #28a745;
+            color: #fff;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        button:hover {
+            background-color: #218838;
+        }
+
+        .btn-add {
+            margin-top: 10px;
+            background-color: #007bff;
+        }
+
+        .btn-add:hover {
+            background-color: #0069d9;
+        }
+
+        .passenger-group-item, .class-group-item {
+            margin-top: 10px;
+        }
+
+        .btn-remove {
+            background-color: #dc3545;
+            color: #fff;
+            padding: 5px 10px;
+            margin-left: 10px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+        }
+
+        .btn-remove:hover {
+            background-color: #c82333;
+        }
+    </style>
+</head>
+<body>
+    <div id="header-container"></div>
+
+    <h1>Cadastro de Produto</h1>
+    <form>
+        <!-- Dados Básicos -->
+        <div class="form-group">
+            <label for="product-name">Nome do produto</label>
+            <input type="text" id="product-name" name="product-name" required>
+        </div>
+
+        <div class="form-group">
+            <label for="product-description">Descrição do produto</label>
+            <textarea id="product-description" name="product-description" rows="4" required></textarea>
+        </div>
+
+        <div class="form-group">
+            <label>É novo?</label>
+            <input type="checkbox" id="is-new" name="is-new">
+        </div>
+
+        <div class="form-group">
+            <label for="price">Preço</label>
+            <input type="number" id="price" name="price" step="0.01" required>
+        </div>
+
+        <div class="form-group">
+            <label for="quantity">Quantidade disponível</label>
+            <input type="number" id="quantity" name="quantity" required>
+        </div>
+
+        <div class="form-group">
+            <label>Está disponível?</label>
+            <input type="checkbox" id="is-available" name="is-available">
+        </div>
+
+        <!-- Especificações Técnicas -->
+        <div class="form-section">
+            <h2>Especificações Técnicas</h2>
+
+            <div class="form-group">
+                <label for="depth">Profundidade de operação (em metros)</label>
+                <input type="number" id="depth" name="depth" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="speed">Velocidade de cruzeiro (em nós)</label>
+                <input type="number" id="speed" name="speed" required>
+            </div>
+
+            <div class="form-group">
+                <label>Quantidade de passageiros</label>
+                <div id="passenger-container">
+                    <div class="passenger-group">
+                        <input type="number" name="passenger-count[]" placeholder="Quantidade de passageiros">
+                        <input type="number" name="additional-cost[]" step="0.01" placeholder="Valor adicional">
+                        <button type="button" class="btn-remove" onclick="removePassengerGroup(this)">Remover</button>
+                    </div>
+                </div>
+                <button type="button" class="btn-add" onclick="addPassengerGroup()">Adicionar mais passageiros</button>
+            </div>
+
+            <div class="form-group">
+                <label>Dimensões (em metros)</label>
+                <div class="dimensions-group">
+                    <input type="number" name="width" placeholder="Largura" step="0.01" required>
+                    <input type="number" name="height" placeholder="Altura" step="0.01" required>
+                    <input type="number" name="depth" placeholder="Profundidade" step="0.01" required>
+                </div>
+            </div>
+
+            <div class="form-group">
+                <label for="weight">Peso (em quilos)</label>
+                <input type="number" id="weight" name="weight" step="0.01" required>
+            </div>
+
+            <div class="form-group">
+                <label for="windows">Quantidade de janelas</label>
+                <input type="number" id="windows" name="windows" required>
+            </div>
+
+            <div class="form-group">
+                <label for="model">Modelo</label>
+                <input type="text" id="model" name="model" required>
+            </div>
+
+            <div class="form-group">
+                <label>Classes</label>
+                <div id="class-container">
+                    <div class="class-group-item">
+                        <input type="text" name="class-names[]" placeholder="Nome da classe">
+                        <button type="button" class="btn-remove" onclick="removeClassGroup(this)">Remover</button>
+                    </div>
+                </div>
+                <button type="button" class="btn-add" onclick="addClassGroup()">Adicionar mais classes</button>
+            </div>
+        </div>
+
+        <!-- Imagens do Produto -->
+        <div class="form-section">
+            <h2>Imagens do Produto</h2>
+
+            <div class="form-group">
+                <label for="images">Upload de imagens</label>
+                <input type="file" id="images" name="images[]" multiple>
+            </div>
+
+            <!-- Configuração das Imagens -->
+            <div class="form-section">
+                <h3>Configuração das Imagens</h3>
+
+                <div class="form-group">
+                    <label for="image-title">Título</label>
+                    <input type="text" id="image-title" name="image-title">
+                </div>
+
+                <div class="form-group">
+                    <label for="image-description">Descrição</label>
+                    <textarea id="image-description" name="image-description" rows="3"></textarea>
+                </div>
+
+                <div class="form-group">
+                    <label for="image-alt">Alt text</label>
+                    <input type="text" id="image-alt" name="image-alt">
+                </div>
+
+                <div class="form-group image-config">
+                    <label for="is-thumb">É thumb?</label>
+                    <input type="checkbox" id="is-thumb" name="is-thumb" onchange="toggleThumbOption(this)">
+                </div>
+
+                <div class="form-group image-config" id="has-thumb-group" style="display: none;">
+                    <label for="has-thumb">Tem thumb?</label>
+                    <input type="checkbox" id="has-thumb" name="has-thumb">
+                </div>
+            </div>
+        </div>
+
+        <!-- Fabricante -->
+        <div class="form-section">
+            <h2>Fabricante</h2>
+
+            <div class="form-group">
+                <label for="manufacturer">Escolha um fabricante</label>
+                <select id="manufacturer" name="manufacturer" required>
+                    <option value="">Selecione</option>
+                    <!-- Opções serão adicionadas aqui -->
+                </select>
+            </div>
+        </div>
+
+        <button type="submit">Salvar Produto</button>
+    </form>
+
+    <script src="js/main.js"></script>
+
+
+    <script>
+       
+       // Função para destacar o item do menu atual
+function highlightCurrentPage() {
+    const navLinks = document.querySelectorAll('.nav_link');
+    const currentPath = window.location.pathname.split("/").pop(); // Obtém o nome do arquivo atual
+
+    navLinks.forEach(link => {
+        // Remove a classe 'active' de todos os links
+        link.classList.remove('active');
+
+        // Se o href do link corresponder ao nome do arquivo atual, adicione a classe 'active'
+        if (link.getAttribute('href') === currentPath) {
+            link.classList.add('active');
+        }
+    });
+}
+
+// Chama a função ao carregar a página
+document.addEventListener('DOMContentLoaded', highlightCurrentPage);
+
+
+           
+        // Função para carregar o header
+        function loadHeader() {
+            fetch('header.html')
+                .then(response => response.text())
+                .then(data => {
+                    document.getElementById('header-container').innerHTML = data;
+                })
+                .catch(error => console.log('Erro ao carregar o header:', error));
+        }
+
+        // Chame a função para carregar o header
+        loadHeader();
+    
+
+
+        function addPassengerGroup() {
+            const container = document.getElementById('passenger-container');
+            const group = document.createElement('div');
+            group.classList.add('passenger-group', 'passenger-group-item');
+            group.innerHTML = `
+                <input type="number" name="passenger-count[]" placeholder="Quantidade de passageiros">
+                <input type="number" name="additional-cost[]" step="0.01" placeholder="Valor adicional">
+                <button type="button" class="btn-remove" onclick="removePassengerGroup(this)">Remover</button>
+            `;
+            container.appendChild(group);
+        }
+
+        function removePassengerGroup(button) {
+            const group = button.parentNode;
+            group.parentNode.removeChild(group);
+        }
+
+        function addClassGroup() {
+            const container = document.getElementById('class-container');
+            const group = document.createElement('div');
+            group.classList.add('class-group-item');
+            group.innerHTML = `
+                <input type="text" name="class-names[]" placeholder="Nome da classe">
+                <button type="button" class="btn-remove" onclick="removeClassGroup(this)">Remover</button>
+            `;
+            container.appendChild(group);
+        }
+
+        function removeClassGroup(button) {
+            const group = button.parentNode;
+            group.parentNode.removeChild(group);
+        }
+
+        function toggleThumbOption(checkbox) {
+            const thumbGroup = document.getElementById('has-thumb-group');
+            if (checkbox.checked) {
+                thumbGroup.style.display = 'none';
+            } else {
+                thumbGroup.style.display = 'block';
+            }
+        }
+    </script>

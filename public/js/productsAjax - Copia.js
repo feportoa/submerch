@@ -1,3 +1,4 @@
+
 const div = document.querySelector('#division');
 
 window.addEventListener('load', () => {
