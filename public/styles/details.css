@@ -454,89 +454,59 @@ a {
 }
 
 /* Estilo para a seção de detalhes do produto */
-.product-details {
-  margin-top: 40px;
-  background-color: #fff;
+.l-main {
+  max-width: 1200px;
+  margin: 20px auto;
   padding: 20px;
+  background-color: #fff;
   border-radius: 8px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-.product-details h3 {
-  font-size: 24px;
-  margin-bottom: 20px;
+h2, h3 {
   color: #333;
+
 }
 
-.product-info p {
-  margin: 10px 0;
-  font-size: 16px;
-  color: #555;
+hr {
+  border: 0;
+  border-top: 1px solid #ccc;
+  margin: 30px 0; /* Maior espaçamento */
 }
 
-.product-info strong {
-  color: #000;
+.table-section table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 30px; /* Maior espaçamento entre tabelas */
+  table-layout: fixed;
 }
 
-/* Estilo para a seção de Especificações Técnicas */
-.technical-specifications {
-  margin-top: 20px;
+.table-section td {
+  padding: 15px; /* Aumento do espaçamento interno */
+  border: 1px solid #ddd;
+  vertical-align: top;
 }
 
-.technical-specifications h4 {
-  font-size: 20px;
-  margin-bottom: 10px;
-  color: #333;
-}
-
-.technical-specifications p, .technical-specifications ul {
-  margin: 10px 0;
-  font-size: 16px;
-  color: #555;
-}
-
-.technical-specifications ul {
-  list-style: none;
-  padding: 0;
-}
-
-.technical-specifications li {
-  margin-left: 20px;
-}
-
-/* Estilo para a seção de Imagens do Produto */
-.product-images {
-  margin-top: 30px;
-}
-
-.product-images h4 {
-  font-size: 20px;
-  margin-bottom: 10px;
-  color: #333;
+.table-section td.label {
+  width: 40%;
+  background-color: #f0f0f0; /* Cor de fundo destacada */
+  font-weight: bold;
+  color: #222;
+  font-size: 14px; /* Aumento do tamanho da fonte */
+  text-transform: uppercase; /* Texto em maiúsculas */
 }
 
 .product-images input[type="file"] {
   margin-bottom: 10px;
 }
 
-.image-config {
+.image-config h4 {
   margin-top: 10px;
-}
-
-.image-config h5 {
-  font-size: 18px;
-  margin-bottom: 10px;
   color: #333;
 }
 
 .image-config p {
-  margin: 10px 0;
-  font-size: 16px;
+  margin: 5px 0;
   color: #555;
-}
-
-.image-config select {
-  padding: 5px;
-  border: 1px solid #ddd;
-  border-radius: 4px;
+  font-size: 16px;
 }
