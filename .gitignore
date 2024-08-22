@@ -4,3 +4,4 @@ fonts
 /ignored
 /node_modules
 .env
+.docker

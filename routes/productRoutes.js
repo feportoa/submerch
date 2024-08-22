@@ -1,5 +1,6 @@
 const express = require('express');
 const { pgQuery } = require('../utils/db.js');
+const { saveImage, resizeProductImage } = require('../utils/imageProcessing.js');
 
 const router = express.Router();
 
@@ -89,11 +90,112 @@ router.post('/newProduct', async (req, res, next) => {
 
         const userReq = req.body;
 
-        const sql = "INSERT INTO products (name, description, is_new, technical_specs, price, manufacturer_id) VALUES ($1, $2, $3, $4, $5, $6);";
+        const sql = "INSERT INTO products (name, description, is_new, technical_specs, price, manufacturer_id) VALUES ($1, $2, $3, $4, $5, $6) RETURNING id;";
         const params = [userReq.name, userReq.description, userReq.is_new, userReq.technical_specs, userReq.price, userReq.manufacturer_id];
 
-        pgQuery(sql, params)
-        return res.status(201).json({ message: "New product added successfully." });
+        let query = await pgQuery(sql, params);
+
+        return res.status(201).json({ message: "New product added successfully. id: " + query[0].id });
+    } catch (err) {
+        next(err);
+    }
+});
+
+router.post('/register', async (req, res, next) => {
+    /* TODO: 
+    * ADD COMMENTS!!
+    * Add session authentication,
+    * Get uploader_id via session,
+    * Process images with sharp,
+    * Detect if filetype is valid (block exe, sh, gif and other unwanted types)
+    * Get image buffer as Base64 from frontend,
+    * Remove logs
+    */
+    try {
+        const userReq = req.body;
+        /*
+        Nome do produto
+        Descrição do produto
+        É novo?
+        Preço
+        Quantidade disponível
+        Está disponível?
+        (SEÇÃO, NÃO CAMPO) Especificações técnicas:
+        Profundidade de operação
+        Velocidade de cruzeiro
+        Quantidade de passageiros (Esse é um "map", um lista que você pode aumentar e adicionar 2 valores, 1 em números (quantidade de passageiros) e um em valor (valor adicional desse veículo com X assentos a mais))
+        Dimensões (3 campos, width, height e depth em METROS)
+        Peso (Em kilos)
+        Janelas
+        Modelo
+        Classes (Uma lista com nomes de classes que eu ainda vou decidir quais são)
+
+        (SEÇÃO, NÃO CAMPO) Imagens do produto
+        Upload de várias imagens
+        (SUBSEÇÃO, NÃO CAMPO) Configuração das imagens:
+        Titulo
+        Descrição
+        Alt text
+        É thumb?
+        Têm thumb? (Só aparece se o usuário não marcar que é thumb)
+
+        Fabricante (Escolher de uma lista de fabricantes cadastrados)
+        */
+
+        /* INSERT INTO products (name, description, is_new, price, quantity, is_available, technical_specs. manufacturer_id)*/
+        /* INSERT INTO images (title, description, alt, is_thumb, has_thumb) */
+
+        const insertImageQuery = `
+            INSERT INTO images (title, description, alt_text, file_name, file_type, file_size_bytes, url, is_thumb, has_thumb, has_alpha, width_px, height_px, uploader_id)
+            VALUES ${userReq.images.map((_, index) => {
+                const offset = index * 13; // 13 columns per image
+                return `($${offset + 1}, $${offset + 2}, $${offset + 3}, $${offset + 4}, $${offset + 5}, $${offset + 6}, $${offset + 7}, $${offset + 8}, $${offset + 9}, $${offset + 10}, $${offset + 11}, $${offset + 12}, $${offset + 13})`;
+              }).join(', ')}
+            RETURNING id;
+        `;
+
+        const insertProductQuery = `
+        INSERT INTO products (name, description, is_new, technical_specs, price, manufacturer_id, quantity, is_available)
+        VALUES ($1, $2, $3, $4, $5, $6, $7, $8)
+        RETURNING id;
+        `;
+        
+        const productParams = Object.entries(userReq.product).map(([_, value]) => value);
+        const imagesParams = userReq.images.map(obj => Object.entries(obj.metadata).map(([_, value]) => value)).flat(Infinity);
+        
+        userReq.images.forEach(async (element) => {
+            // TODO: change `'test'` to current suffix (image keyword)
+            await saveImage(element, userReq.product.name, 'test');
+            if(element.metadata.has_thumb) {
+                console.log("Resizing image. ");
+                await resizeProductImage(element, userReq.images, userReq.product.name, 'test');
+            }
+        });
+
+        let [imagesId, productId] = await Promise.all([
+            pgQuery(insertImageQuery, imagesParams),
+            pgQuery(insertProductQuery, productParams),
+        ]);
+
+        const insertRelationProductImages = `
+        INSERT INTO product_images (product_id, image_id)
+        VALUES ${userReq.images.map((_, index) => {
+            const offset = index * 2; // 2 columns per image
+            return `($${offset + 1}, $${offset + 2})`;
+          }).join(', ')}
+        `;
+
+        let relationParams = [];
+
+        for (let i = 0; i < userReq.images.length; i++) {
+            relationParams.push(productId[0].id);
+            relationParams.push(imagesId[i].id);
+        }
+        
+        await pgQuery(insertRelationProductImages, relationParams);
+
+        return res.status(201).json({ message: "Insertions made successfully." });
+
     } catch (err) {
         next(err);
     }
@@ -103,6 +205,7 @@ router.delete('/removeProduct', async (req, res, next) => {
     try {
         const userReq = req.body;
 
+        // TODO: Create a function to see if the product has dependencies (product_images, user, etc)
         if(!userReq.forceDelete) return res.status(403).json({ message: "FORBIDDEN: Set forceDelete to true to continue" });
 
         const params = [userReq.id];
