@@ -132,6 +132,10 @@ a {
   color: black; 
 }
 
+.special_link {
+  color: #FF5733; /* Cor específica para o link "FORM" */
+}
+
 
 .nav_link::after {
   content: '';
@@ -201,3 +205,6 @@ a {
     margin-right: auto;
   }
 }
+
+
+

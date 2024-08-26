@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Formulário de Produto</title>
+    <title>Product Form</title>
     <style>
         body {
             font-family: Arial, sans-serif;
@@ -12,12 +12,20 @@
             background-color: #f4f4f4;
         }
 
+        .container-group{
+            margin-top: 70px;
+            max-width: 700px;
+            margin-left: auto;
+            margin-right: auto;
+
+        }
+
         h1, h2 {
             color: #333;
         }
 
         form {
-            background: #fff;
+            background-color: #f5f5f5; /* Opcional: adiciona um fundo branco para destaque */
             padding: 20px;
             border-radius: 8px;
             box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
@@ -120,6 +128,7 @@
 <body>
     <div id="header-container"></div>
 
+    <div class="container-group">
     <h1>Cadastro de Produto</h1>
     <form>
         <!-- Dados Básicos -->
@@ -270,48 +279,13 @@
 
         <button type="submit">Salvar Produto</button>
     </form>
+</div>
 
     <script src="/js/main.js"></script>
 
 
     <script>
        
-       // Função para destacar o item do menu atual
-function highlightCurrentPage() {
-    const navLinks = document.querySelectorAll('.nav_link');
-    const currentPath = window.location.pathname.split("/").pop(); // Obtém o nome do arquivo atual
-
-    navLinks.forEach(link => {
-        // Remove a classe 'active' de todos os links
-        link.classList.remove('active');
-
-        // Se o href do link corresponder ao nome do arquivo atual, adicione a classe 'active'
-        if (link.getAttribute('href') === currentPath) {
-            link.classList.add('active');
-        }
-    });
-}
-
-// Chama a função ao carregar a página
-document.addEventListener('DOMContentLoaded', highlightCurrentPage);
-
-
-           
-        // Função para carregar o header
-        function loadHeader() {
-            fetch('header.html')
-                .then(response => response.text())
-                .then(data => {
-                    document.getElementById('header-container').innerHTML = data;
-                })
-                .catch(error => console.log('Erro ao carregar o header:', error));
-        }
-
-        // Chame a função para carregar o header
-        loadHeader();
-    
-
-
         function addPassengerGroup() {
             const container = document.getElementById('passenger-container');
             const group = document.createElement('div');

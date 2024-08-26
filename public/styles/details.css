@@ -510,3 +510,33 @@ hr {
   color: #555;
   font-size: 16px;
 }
+
+.menu-bar {
+  display: flex;
+  justify-content: center;
+  background-color: #333;
+}
+
+.tab-button {
+  background-color: #333;
+  color: white;
+  padding: 14px 20px;
+  border: none;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  font-size: 16px;
+  margin: 0;
+}
+
+.tab-button.active, .tab-button:hover {
+  background-color: #555;
+}
+
+.tab-content {
+  padding: 20px;
+  border-top: 1px solid #ccc;
+}
+
+h2 {
+  margin-top: 0;
+}

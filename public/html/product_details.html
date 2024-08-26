@@ -8,7 +8,7 @@
     <title>product_details</title>
  
 </head>
-<body>
+<body id="product_details">
     <div id="header-container"></div>
 
     <!-- HOME  -->
@@ -76,8 +76,15 @@
     <main class="l-main bd-grid">
         <div class="product-details">
             <h2>Detalhes do Produto</h2>
-            <hr>
-            
+
+            <div class="menu-bar">
+                <button class="tab-button active" onclick="openTab('general-info')">Informações Gerais</button>
+                <button class="tab-button" onclick="openTab('tech-specs')">Especificações Técnicas</button>
+            </div>
+        
+         
+            <div id="general-info" class="tab-content">
+
             <h3>Info geral</h3>
             <div class="table-section">
                 <table>
@@ -107,8 +114,10 @@
                     </tr>
                 </table>
             </div>
+        </div>
 
-            
+        <div id="tech-specs" class="tab-content" style="display: none;">
+
             <h3>Especificações Técnicas</h3>
             <div class="table-section">
                 <table>
@@ -146,11 +155,9 @@
                     </tr>
                 </table>
             </div>
+        </div>
            
     </main>
-
-
-
 
 <script src="/js/main.js"></script>
 
