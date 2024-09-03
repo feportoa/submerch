@@ -95,7 +95,7 @@ main {
     object-fit: cover;
 }
 
-.product-info {
+.product-info{
     padding: 10px; 
     text-align: left;
     flex-grow: 1;
@@ -105,6 +105,8 @@ main {
     font-size: 16px; 
     margin: 8px 0;
     color: #333;
+    text-align: left;
+
 }
 
 
@@ -116,7 +118,7 @@ main {
 
 .product-price {
     font-size: 18px; /* Tamanho de fonte ajustado */
-    color: #e60023;
+    color: #FF5733;
     font-weight: bold;
     margin-bottom: 15px;
 }

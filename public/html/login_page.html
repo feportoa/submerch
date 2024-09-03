@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Login</title>
+    <link rel="stylesheet" href="styles/login.css">
+</head>
+<body>
+    <div class="container">
+        <div class="left-section">
+            <div class="welcome-message">
+                <h1>Welcome <br> back</h1>
+                <p>Acesse sua conta para continuar</p>
+                <div class="social-icons">
+                    <a href="#"><img src="/images/facebook-icon.svg" alt="Facebook"></a>
+                    <a href="#"><img src="/images/icon-facebook.svg" alt="Instagram"></a>
+                    <a href="#"><img src="/images/linkedin-icon.svg" alt="LinkedIn"></a>
+                </div>
+            </div>
+        </div>
+        <div class="right-section">
+            <!-- Formulário de Login -->
+           <!-- Formulário de Login -->
+<div class="form-wrapper login-form">
+    <h2>Entrar na sua conta</h2>
+    <form action="#">
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" required>
+
+        <label for="password">Senha:</label>
+        <input type="password" id="password" name="password" required>
+
+        <button type="submit">Entrar</button>
+    </form>
+    <p><a href="recover_password.html">Esqueceu sua senha?</a></p>
+    <p>Não tem uma conta? <a href="#" id="show-register">Registre-se</a></p>
+</div>
+
+<!-- Formulário de Registro -->
+<div class="form-wrapper register-form" style="display: none;">
+    <h2>Criar uma nova conta</h2>
+    <form action="#">
+        <label for="name">Nome:</label>
+        <input type="text" id="name" name="name" required>
+
+        <label for="email">Email:</label>
+        <input type="email" id="register-email" name="email" required>
+
+        <label for="password">Senha:</label>
+        <input type="password" id="register-password" name="password" required>
+
+        <button type="submit">Registrar</button>
+    </form>
+    <p>Já tem uma conta? <a href="#" id="show-login">Entrar</a></p>
+</div>
+
+    <script>
+        // JavaScript para alternar entre os formulários de login e registro
+        document.getElementById('show-register').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector('.login-form').style.display = 'none';
+            document.querySelector('.register-form').style.display = 'block';
+        });
+
+        document.getElementById('show-login').addEventListener('click', function(e) {
+            e.preventDefault();
+            document.querySelector('.register-form').style.display = 'none';
+            document.querySelector('.login-form').style.display = 'block';
+        });
+    </script>
+</body>
+</html>

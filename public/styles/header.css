@@ -76,9 +76,9 @@ a {
 /*=====  LAYOUT =====*/
 
 .bd-grid {
-  max-width: 1300px;
-  margin-left: 1rem;
-  margin-right: 1rem;
+  max-width: 100%;
+  padding-left: 15px;
+  padding-right: 15px;
 }
 
 .header {
@@ -161,6 +161,18 @@ a {
 .nav_toggle {
   cursor: pointer;
 }
+.user-icon {
+  width: 35px; 
+  height: 35px; 
+  border-radius: 50%; 
+  vertical-align: middle; 
+}
+.nav_shop{
+  display: flex;
+  gap: 7px;
+  justify-content: space-between;
+}
+
 
 /* menu */
 .show {
