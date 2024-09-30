@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Login</title>
+    <title>Login page</title>
     <link rel="stylesheet" href="styles/login.css">
 </head>
 <body>
@@ -60,20 +60,7 @@
 </div>
 </div>
 
+<script src="/js/main.js"></script>
 
-    <script>
-        // JavaScript para alternar entre os formulários de login e registro
-        document.getElementById('show-register').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.querySelector('.login-form').style.display = 'none';
-            document.querySelector('.register-form').style.display = 'block';
-        });
-
-        document.getElementById('show-login').addEventListener('click', function(e) {
-            e.preventDefault();
-            document.querySelector('.register-form').style.display = 'none';
-            document.querySelector('.login-form').style.display = 'block';
-        });
-    </script>
 </body>
 </html>
