@@ -76,7 +76,8 @@ async function hasProducts(manufacturerId) {
         const sql = "SELECT * FROM products WHERE manufacturer_id = $1"
 
         const queryRes = await pgQuery(sql, params);
-        return queryRes.rows[0] > 0;
+        console.log({queryRes: queryRes, queryResRows: queryRes.length});
+        return queryRes.length > 0;
     } catch (err) {
         throw err;
     }
