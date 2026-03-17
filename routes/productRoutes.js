@@ -28,14 +28,14 @@ router.get('/all', async (req, res, next) => {
     }
 });
 
-router.get('/:uno', async (req, res, next) => {
+router.get('/:id', async (req, res, next) => {
     try {
-        const uno = req.params.uno;
+        const id = req.params.id;
         let obj = {}
 
-        let sql = `SELECT * FROM products WHERE uno = $1;`;
+        let sql = `SELECT * FROM products WHERE id = $1;`;
 
-        let productData = await pgQuery(sql, [uno]);
+        let productData = await pgQuery(sql, [id]);
         if (productData.length === 0) return res.status(404).json({ message: "Product not found." });
         
         obj.product = productData;
@@ -194,7 +194,7 @@ router.post('/register', async (req, res, next) => {
         
         await pgQuery(insertRelationProductImages, relationParams);
 
-        return res.status(201).json({ message: "Insertions made successfully." });
+        return res.status(201).json({ message: "Insertions made successfully. Check product id: " + productId[0].id});
 
     } catch (err) {
         next(err);
@@ -208,11 +208,14 @@ router.delete('/removeProduct', async (req, res, next) => {
         // TODO: Create a function to see if the product has dependencies (product_images, user, etc)
         if(!userReq.forceDelete) return res.status(403).json({ message: "FORBIDDEN: Set forceDelete to true to continue" });
 
+        let checkIfExists = await pgQuery("SELECT * FROM products WHERE id = $1;", [userReq.id]);
+        if(checkIfExists.length === 0) return res.status(404).json({ message: "Product not found." });
+
         const params = [userReq.id];
         const sql = "DELETE FROM products WHERE id = $1;";
         await pgQuery(sql, params);
 
-        return res.status(204).json({ message: "Removed products successfully." });
+        return res.sendStatus(204);
     } catch (err) {
         next(err);
     }
