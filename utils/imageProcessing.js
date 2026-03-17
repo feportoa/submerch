@@ -49,6 +49,7 @@ async function saveImage(imageObj, productName, sufixName) {
     imageObj.url = newUrl
 
     // URL for the new thumbnails
+    // Try await fs.promises.writeFile(`public/${newUrl}`, buffer); Later, if it works, remove the callback version of fs.writeFile
     fs.writeFile(`public/${newUrl}`, buffer, (err) => {
         if (err) {
             throw err;
@@ -208,5 +209,5 @@ module.exports = {
     saveImage,
     resizeProductImage,
     resizeWithPath,
-    resized
+    resize
 }
