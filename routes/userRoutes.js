@@ -35,7 +35,6 @@ router.get('/', /*authenticateToken, authorizeRole('ADMIN'),*/ async (req, res, 
                     JOIN users u ON u.id = o.user_id
                     WHERE u.id = $1;`,
             products: `SELECT p.id AS product_id,
-                              p.uno,
                               p.name
                         FROM products p
                         JOIN orders o ON o.product_id = p.id
@@ -211,7 +210,7 @@ router.delete('/removeUser', async (req, res, next) => {
         const userData = await userExists(userReq.email);
 
         // If user does NOT exists, returns
-        if (!userData || !(userData.length > 0)) return res.status(500).json({ message: `User \"${userReq.email}\" does not exists in database` });
+        if (!userData || !(userData.length > 0)) return res.status(404).json({ message: `User \"${userReq.email}\" does not exists in database` });
         
         // If user has dependencies and haven't forceDeleted, returns
         const hasDependencies = await hasUploads(userData[0].id);
