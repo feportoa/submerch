@@ -8,7 +8,7 @@ const env = require('../.env/secret.json');
 
 const router = express.Router();
 
-router.get('/', /*authenticateToken, authorizeRole('ADMIN'),*/ async (req, res, next) => {
+router.get('/', authenticateToken, authorizeRole('ADMIN'), async (req, res, next) => {
     try {
         const User = class {
             constructor() {
@@ -100,7 +100,6 @@ router.get('/all', authenticateToken, authorizeRole('ADMIN'), async (req, res, n
     }
 });
 
-// TODO: Validate authentication in other routes
 router.post('/login', async (req, res, next) => {
     try {
         const userData = req.body;
@@ -203,7 +202,7 @@ router.post('/register', async (req, res, next) => {
     }
 });
 
-router.delete('/removeUser', async (req, res, next) => {
+router.delete('/removeUser', authenticateToken, async (req, res, next) => {
     try {
         const userReq = req.body;
 
@@ -212,6 +211,11 @@ router.delete('/removeUser', async (req, res, next) => {
         // If user does NOT exists, returns
         if (!userData || !(userData.length > 0)) return res.status(404).json({ message: `User \"${userReq.email}\" does not exists in database` });
         
+        if (req.user.roleLevel < 3) {
+            if(req.user.userId !== userData[0].id)
+                return res.status(403).json({ message: "FORBIDDEN: You don't have permission to delete this user." });
+        }
+
         // If user has dependencies and haven't forceDeleted, returns
         const hasDependencies = await hasUploads(userData[0].id);
         if (hasDependencies && !userReq.forceDelete) return res.status(403).json({ message: "FORBIDDEN: Cannot delete user with uploads. Set forceDelete to true to override." });

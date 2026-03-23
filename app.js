@@ -22,7 +22,6 @@ const HOST = '0.0.0.0';
 app.use(express.json({ limit: '10mb'}));
 
 // Middleware
-app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 app.use(sessionMiddleware);
 
