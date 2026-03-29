@@ -2,6 +2,8 @@ const express = require('express');
 const { pgQuery } = require('../utils/db.js');
 const { saveImage, resizeProductImage } = require('../utils/imageProcessing.js');
 
+const { authenticateToken, authorizeRole } = require('../middleware/authMiddleware.js')
+
 const router = express.Router();
 
 router.get('/', async (req, res, next) => {
@@ -77,7 +79,7 @@ router.get('/:id', async (req, res, next) => {
     }
 });
 
-router.post('/newProduct', async (req, res, next) => {
+router.post('/newProduct', authenticateToken, authorizeRole('MANUFACTURER'), async (req, res, next) => {
     try {
         /* 
         * TODO
@@ -101,8 +103,9 @@ router.post('/newProduct', async (req, res, next) => {
     }
 });
 
-router.post('/register', async (req, res, next) => {
+router.post('/register', authenticateToken, authorizeRole('MANUFACTURER'), async (req, res, next) => {
     /* TODO: 
+    * Only manufacturer can add it's own product or admin can add any product. Add authentication and authorization + constraints.
     * ADD COMMENTS!!
     * Add session authentication,
     * Get uploader_id via session,
@@ -201,12 +204,24 @@ router.post('/register', async (req, res, next) => {
     }
 });
 
-router.delete('/removeProduct', async (req, res, next) => {
+router.delete('/removeProduct', authenticateToken, authorizeRole('MANUFACTURER'), async (req, res, next) => {
+    // TODO: Only admin should be able to delete any product. Only the manufacturer of the product or an admin can delete a product. Add authentication and authorization + constraints.
     try {
         const userReq = req.body;
 
-        // TODO: Create a function to see if the product has dependencies (product_images, user, etc)
-        if(!userReq.forceDelete) return res.status(403).json({ message: "FORBIDDEN: Set forceDelete to true to continue" });
+        let productData = await productExists(userReq.id);
+
+        let fetchManufacturerName = await pgQuery("SELECT name FROM manufacturers WHERE id = $1;", [productData[0].manufacturer_id]);
+
+        // TODO: Create a function to check if the product has dependencies (product_images, user, etc)
+        if (!userReq.forceDelete) return res.status(403).json({ message: "FORBIDDEN: Set forceDelete to true to continue" });
+
+        if (!productData || productData.length === 0) return res.status(404).json({ message: "Product not found." });
+
+        if (req.user.roleLevel < 3) {
+            if(req.user.name !== fetchManufacturerName[0].name)
+                return res.status(403).json({ message: "FORBIDDEN: You don't have permission to delete this product." });
+        }
 
         let checkIfExists = await pgQuery("SELECT * FROM products WHERE id = $1;", [userReq.id]);
         if(checkIfExists.length === 0) return res.status(404).json({ message: "Product not found." });
@@ -220,5 +235,17 @@ router.delete('/removeProduct', async (req, res, next) => {
         next(err);
     }
 });
+
+async function productExists(id) {
+    try {
+        let sql = 'SELECT * FROM products WHERE id = $1';
+        let queryValues = [id];
+
+        const product = await pgQuery(sql, queryValues);
+        return product; // Returns true if exists
+    } catch (err) {
+        throw err;
+    }
+}
 
 module.exports = router;
