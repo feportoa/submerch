@@ -104,8 +104,11 @@ router.post('/login', async (req, res, next) => {
     try {
         const userData = req.body;
         
-        const user = await userExists(userData.email);
+        if (userData.email == null || userData.password == null) return res.status(401).json({ message: "Authentication failed" })
+
+        const user = await getUserByEmail(userData.email);
         req.session.user = user;
+        // TODO
         req.session.user.cart = { // Cart items data should be passed to the payment gateway
             items: {
                 totalItems: 0,
@@ -122,7 +125,7 @@ router.post('/login', async (req, res, next) => {
         };
         
         // Deleting sensitive info from session data
-        delete req.session.user.password;
+        delete req.session.user.password
         delete req.session.user.id;
 
         if(!user || user.length < 1) return res.status(401).json({ message: 'Authentication failed' });
@@ -151,10 +154,10 @@ router.post('/login', async (req, res, next) => {
 router.post('/register', async (req, res, next) => {
     try {
         const userReq = req.body;
-        const userData = await userExists(userReq.email);
+        const userData = await getUserByEmail(userReq.email);
 
         // Check if user already exists
-        if (userData.length > 0) return res.status(400).json({ message: "UNAUTHORIZED: User already exists." });
+        if (userData.length > 0) return res.status(409).json({ message: "UNAUTHORIZED: User already exists." });
         
         const hashedPassword = await hashPassword(userReq.password);
         let sql
@@ -172,7 +175,7 @@ router.post('/register', async (req, res, next) => {
         
         await pgQuery(sql, queryValues);
         
-        let user = await userExists(userReq.email);
+        const user = await getUserByEmail(userReq.email);
         if(!user || user.length < 1) return res.status(401).json({ message: 'Authentication failed' });
 
         // Setting up session
@@ -196,7 +199,18 @@ router.post('/register', async (req, res, next) => {
         delete req.session.user.password;
         delete req.session.user.id;
 
-        return res.status(201).json({ message: "User created successfuly." });
+        const roleLevels = {
+            'ADMIN': 3,
+            'MANUFACTURER': 2,
+            'CLIENT': 1
+        }
+
+        const userId = user[0].id;
+        const roleLevel = roleLevels[user[0].user_type];
+
+        const token = jwt.sign({ userId, roleLevel }, env.JWT_SECRET, { expiresIn: '7d' });
+
+        return res.status(201).json({ message: "User created successfuly.", token: token});
     } catch (err) {
         next(err);
     }
@@ -206,7 +220,7 @@ router.delete('/removeUser', authenticateToken, async (req, res, next) => {
     try {
         const userReq = req.body;
 
-        const userData = await userExists(userReq.email);
+        const userData = await getUserByEmail(userReq.email);
 
         // If user does NOT exists, returns
         if (!userData || !(userData.length > 0)) return res.status(404).json({ message: `User \"${userReq.email}\" does not exists in database` });
@@ -231,7 +245,7 @@ router.delete('/removeUser', authenticateToken, async (req, res, next) => {
     }
 });
 
-async function userExists(email) {
+async function getUserByEmail(email) {
     /*
     * Checks if user exists in database
     * Returns an array with [userId, true] if exists, [null, false] otherwise
