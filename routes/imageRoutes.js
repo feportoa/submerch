@@ -9,10 +9,13 @@ const { pgQuery } = require('../utils/db.js');
 
 // Setting up express
 const express = require('express');
+const { saveImage, resize } = require('../utils/imageProcessing.js');
 const router = express.Router();
 
 router.post('/newImage', async (req, res, next) => {
     try {
+        // TODO: Upload image as base64 to public/images
+        // This image is detached from anything right now. It needs to be attached to a product, not only a user. Change await saveImage on line 60 when done
         const userReq = req.body;
 
         const sql = `
@@ -51,13 +54,19 @@ router.post('/newImage', async (req, res, next) => {
             userReq.uploader_id
         ];
 
+        if (userReq.is_thumb) {
+            let filename = userReq.file_name;
+            let imagePath = path.join(__dirname, '..', 'public', 'images', filename);
+            await resize(imagePath)
+        }
+        await saveImage(userReq, "")
         let query = await pgQuery(sql, params);
 
         return res.status(201).json({ message: "Image inserted successfully. Check image id: " + query[0].id });
     } catch (err) {
         next(err);
     }
-})
+});
 
 router.get('/id/:image_id', async (req, res, next) => {
     try {
