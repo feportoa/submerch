@@ -167,11 +167,10 @@ router.post('/register', authenticateToken, authorizeRole('MANUFACTURER'), async
         const imagesParams = userReq.images.map(obj => Object.entries(obj.metadata).map(([_, value]) => value)).flat(Infinity);
         
         userReq.images.forEach(async (element) => {
-            // TODO: change `'test'` to current suffix (image keyword)
-            await saveImage(element, userReq.product.name, 'test');
+            // TODO: change `'test'` to current suffix (image keyword) -> Hello, me from the past! I publicly state here that I have NO FUCKING IDEA what you're talking about. That said: I'll just keep the sufix as either "thumbnail" or none
+            await saveImage(element, userReq.product.name);
             if(element.metadata.has_thumb) {
-                console.log("Resizing image. ");
-                await resizeProductImage(element, userReq.images, userReq.product.name, 'test');
+                await resizeProductImage(element, userReq.images, userReq.product.name, 'thumbnail');
             }
         });
 
@@ -190,7 +189,7 @@ router.post('/register', authenticateToken, authorizeRole('MANUFACTURER'), async
 
         let relationParams = [];
 
-        for (let i = 0; i < userReq.images.length; i++) {
+        for (let i = 0; i < imagesId.length; i++) {
             relationParams.push(productId[0].id);
             relationParams.push(imagesId[i].id);
         }
