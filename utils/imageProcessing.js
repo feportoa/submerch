@@ -32,7 +32,7 @@ async function resize(resizedPath, imagePath = null, imageBuffer = null) {
 }
 
 //TODO: Modify saveImage and resizeProductImage to save in an amazon bucket
-async function saveImage(imageObj, productName, sufixName) {
+async function saveImage(imageObj, productName, sufixName = "") {
     // Converts buffer
     let base64 = imageObj.base64;
     let buffer = base64ToBuffer(base64);
@@ -55,9 +55,11 @@ async function saveImage(imageObj, productName, sufixName) {
             throw err;
         }
     });
+    
+    return imageName;
 }
 
-async function resizeProductImage(imageObj, req, productName, sufixName) {
+async function resizeProductImage(imageObj, req, productName, sufixName = "") {
     /*
     * Resizes an image to 200x200 and 400x400 pixels and saves it to images path.
     * @param {obj} imageObj - The object of the specific image you're resizing (received via req).
@@ -176,8 +178,13 @@ function base64ToBuffer(base64) {
 
 function updateImageName(productName, sufixName) {
     console.log({productName, sufixName});
-    let imageName = `${productName}_${sufixName}`;
-    imageName = formatName(imageName);
+    let imageName;
+    if(sufixName != ""){
+        imageName = `${productName}_${sufixName}`
+        imageName = formatName(imageName);
+     } else {
+        imageName = productName;
+     }
 
     console.log({ formated: imageName });
 
