@@ -131,7 +131,7 @@ router.post('/login', async (req, res, next) => {
         if(!user || user.length < 1) return res.status(401).json({ message: 'Authentication failed' });
 
         const passwordMatch = await bcrypt.compare(userData.password, user[0].password);
-        if(!passwordMatch) return res.status(401).json({ message: 'Authentication failed' });
+        if(!passwordMatch) return res.status(401).json({ message: 'Authentication failed: invalid credentials' });
 
         const roleLevels = {
             'ADMIN': 3,
