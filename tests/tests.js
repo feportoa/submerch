@@ -1,14 +1,21 @@
-const { password } = require("pg/lib/defaults");
-
 async function loginNoPassword() {
     logFunctionCall(loginNoPassword);
     try {
-        const response = await loginRequest( { email: "j@brothers.com" } );
+        const clientBody = createMockUser(1);
+        await registerUserRequest(clientBody);
+
+        const response = await loginRequest( { email: clientBody.email } );
 
         const data = await response.json().catch(() => null);
         assert(response.status === 401, "Login without password returns 401 (Unauthorized)");
         assert(data.message !== undefined, "Response should have a message");
         assert(data.message === "Authentication failed", "Message should be 'Authentication failed'");
+
+        // Cleaning data residue
+        const correctLogin = await loginRequest({ email: clientBody.email, password: clientBody.password });
+        const correctData = await correctLogin.json();
+
+        await deleteUserRequest({ email: clientBody.email, forceDelete: false }, correctData.token);
     } catch (err) {
         console.error("Error during test execution:", err);
     }
@@ -17,12 +24,21 @@ async function loginNoPassword() {
 async function loginNoEmail() {
     logFunctionCall(loginNoEmail);
     try {
-        const response = await loginRequest( { password: "jb27071997" } );
+        const clientBody = createMockUser(1);
+        await registerUserRequest(clientBody);
+
+        const response = await loginRequest( { password: clientBody.password } );
 
         const data = await response.json().catch(() => null);
         assert(response.status === 401, "Login without email returns 401 (Unauthorized)");
         assert(data.message !== undefined, "Response should have a message");
         assert(data.message === "Authentication failed", "Message should be 'Authentication failed'");
+
+        // Cleaning data residue
+        const correctLogin = await loginRequest({ email: clientBody.email, password: clientBody.password });
+        const correctData = await correctLogin.json();
+
+        await deleteUserRequest({ email: clientBody.email, forceDelete: false }, correctData.token);
     } catch (err) {
         console.error("Error during test execution:", err);
     }
@@ -31,7 +47,9 @@ async function loginNoEmail() {
 async function loginSuccess() {
     logFunctionCall(loginSuccess);
     try {
-        const response = await loginRequest({ email: "jonas@brothers.com", password: "jb27071997" });
+        let userBody = createMockUser(1);
+        await registerUserRequest(userBody);
+        const response = await loginRequest({ email: userBody.email, password: userBody.password });
 
         const data = await response.json().catch(() => null);
 
@@ -41,20 +59,63 @@ async function loginSuccess() {
         assert(data !== null, "Response should not be empty");
         assert(typeof data.token === "string", "Token is a string");
         assert(data.token.length > 10, "Token is not empty garbage");
-        assert(userData.roleLevel !== undefined, "User has a role level");
+        assert(userData.roleLevel !== null, "User has a role level");
     } catch (err) {
         console.error("Error during test execution:", err);
     }
 }
 
-async function loginWrongPassword() {}
+async function loginWrongPassword() {
+    logFunctionCall(loginWrongPassword);
+    try {
+        const clientBody = createMockUser(1);
+        await registerUserRequest(clientBody);
 
-async function loginWrongEmail() {}
+        const response = await loginRequest({ email: clientBody.email, password: "xxxxxxxx" });
+
+        let resData = await response.json();
+
+        assert(response.status == 401, "Status code should be 401");
+        assert(resData.token == null, "Response should not return token");
+        assert(resData.message == "Authentication failed: invalid credentials", "Message should be \"Authentication failed: invalid credentials\"");
+
+        // Cleaning data residue
+        const correctLogin = await loginRequest({ email: clientBody.email, password: clientBody.password });
+        const correctData = await correctLogin.json();
+
+        await deleteUserRequest({ email: clientBody.email, forceDelete: false }, correctData.token);
+    } catch (err) {
+        console.error("Error during test execution: ", err);
+    }
+}
+
+async function loginWrongEmail() {
+    logFunctionCall(loginWrongEmail);
+    try {
+        const clientBody = createMockUser(1);
+        await registerUserRequest(clientBody);
+
+        const response = await loginRequest({ email: "xxxxxxxx", password: clientBody.password  });
+
+        let resData = await response.json();
+
+        assert(response.status == 401, "Status code should be 401");
+        assert(resData.token == null, "Response should not return token");
+        assert(resData.message == "Authentication failed", "Message should be \"Authentication failed\"");
+
+        // Cleaning data residue
+        const correctLogin = await loginRequest({ email: clientBody.email, password: clientBody.password });
+        const correctData = await correctLogin.json();
+
+        await deleteUserRequest({ email: clientBody.email, forceDelete: false }, correctData.token);
+    } catch (err) {
+        console.error("Error during test execution: ", err);
+    }
+}
 
 // Admin and Client level users deleting each other
 async function removeUser_3And1() {
     logFunctionCall(removeUser_3And1);
-    // TODO: Tests are passing but it's not how you'd expect. For some reason, the userRoutes delete user is receiving... Jonas@brothers.com? But we don't have this email. Good luck for you, me from the future.
     try {
         /* 
         * Test cases:
@@ -68,63 +129,32 @@ async function removeUser_3And1() {
         * L1 tries to delete self
         */
        
-       // Body data
-       const admin1Email = "test_admin1@submerch.com";
-       const admin1Password = "Test_Admin1Password";
-       const admin2Email = "test_admin2@submerch.com";
-       const admin2Password = "Test_Admin2Password";
-
-       const client1Email = "test_client1@submerch.com";
-       const client1Password = "Test_Client1Password";
-       const client2Email = "test_client2@submerch.com";
-       const client2Password = "Test_Client2Password";
-       
        // Bodies
-       const registerAdmin1Body = {
-           name: "test_admin_1",
-           email: admin1Email,
-           password: admin1Password,
-           user_type: "ADMIN"
-        };
+        const registerAdmin1Body = createMockUser(3, 1);
         
-        const registerClient1Body = {
-            name: "test_client_1",
-            email: client1Email,
-            password: client1Password,
-            user_type: "CLIENT"
-        };
+        const registerClient1Body = createMockUser(1, 1);
 
-        const registerAdmin2Body = {
-           name: "test_admin_2",
-           email: admin2Email,
-           password: admin2Password,
-           user_type: "ADMIN"
-        };
+        const registerAdmin2Body = createMockUser(3, 2);
         
-        const registerClient2Body = {
-            name: "test_client_2",
-            email: client2Email,
-            password: client2Password,
-            user_type: "CLIENT"
-        };
+        const registerClient2Body = createMockUser(1, 2);
         
         let deleteClient1Body = {
-            email: client1Email,
+            email: registerClient1Body.email,
             forceDelete: false
         }
- 
+
         let deleteAdmin1Body = {
-            email: admin1Email,
+            email: registerAdmin1Body.email,
             forceDelete: false
         }
 
         let deleteClient2Body = {
-            email: client2Email,
+            email: registerClient2Body.email,
             forceDelete: false
         }
  
         let deleteAdmin2Body = {
-            email: admin2Email,
+            email: registerAdmin2Body.email,
             forceDelete: false
         }
 
@@ -242,6 +272,26 @@ function logFunctionCall(func) {
     console.log(`${yellowBg} Calling function: ${func.name} ${reset}`);
 }
 
+function createMockUser(roleLevel, number = 0) {
+    let userRole = {
+        3: 'ADMIN',
+        2: 'MANUFACTURER',
+        1: 'CLIENT'
+    }
+
+    let userName = `test_${userRole[roleLevel]}_${number}`;
+    let userEmail = `test_${userRole[roleLevel].toLowerCase()}${number}@submerch.com`;
+    let userPassword = `Test_${userRole[roleLevel].toLowerCase()}${number}Password`;
+
+    return body = 
+    {
+        name: userName,
+        email: userEmail,
+        password: userPassword,
+        user_type: userRole[roleLevel]
+    }
+}
+
 function assert(condition, name) {
     // Silly colors because I deserve it :3
     const green = "\x1b[32m";
@@ -259,5 +309,7 @@ function assert(condition, name) {
     await loginSuccess();
     await loginNoEmail();
     await loginNoPassword();
+    await loginWrongEmail();
+    await loginWrongPassword();
     await removeUser_3And1();
 })();
